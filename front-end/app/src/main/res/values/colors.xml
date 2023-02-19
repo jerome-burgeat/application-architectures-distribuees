@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="appBackground">#280A0A</color>
+    <color name="buttonSpeechColor1">#2D1919</color>
+    <color name="buttonSpeechColor2">#311717</color>
+    <color name="buttonSpeechBorder">#2D1919</color>
+    <color name="seekBarColord1">#04624B</color>
 </resources>

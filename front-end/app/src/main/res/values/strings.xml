@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="buttonSpeech" />
+    <string name="music_title">single_line_text_view_that_scrolls_automatically_if_the_text_is_too_long_to_fit_in_the_widget</string>
+    <string name="button_play" >play</string>
+    <string name="button_next">next</string>
+    <string name="button_previous" >previous</string>
+    <string name="music_image">music image</string>
 </resources>
