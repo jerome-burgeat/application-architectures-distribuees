@@ -39,6 +39,54 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def end_helloWorld(self, _r):
             return _M_ApplicationArchitecturesDistribuees.Server._op_helloWorld.end(self, _r)
 
+        def addMusic(self, dataMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.invoke(self, ((dataMusic, ), context))
+
+        def addMusicAsync(self, dataMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.invokeAsync(self, ((dataMusic, ), context))
+
+        def begin_addMusic(self, dataMusic, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.begin(self, ((dataMusic, ), _response, _ex, _sent, context))
+
+        def end_addMusic(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.end(self, _r)
+
+        def deleteMusic(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_deleteMusic.invoke(self, ((titleMusic, ), context))
+
+        def deleteMusicAsync(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_deleteMusic.invokeAsync(self, ((titleMusic, ), context))
+
+        def begin_deleteMusic(self, titleMusic, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_deleteMusic.begin(self, ((titleMusic, ), _response, _ex, _sent, context))
+
+        def end_deleteMusic(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_deleteMusic.end(self, _r)
+
+        def searchMusic(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.invoke(self, ((titleMusic, ), context))
+
+        def searchMusicAsync(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.invokeAsync(self, ((titleMusic, ), context))
+
+        def begin_searchMusic(self, titleMusic, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.begin(self, ((titleMusic, ), _response, _ex, _sent, context))
+
+        def end_searchMusic(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.end(self, _r)
+
+        def updateMusicChangeTitle(self, titleCurrent, newTitle, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_updateMusicChangeTitle.invoke(self, ((titleCurrent, newTitle), context))
+
+        def updateMusicChangeTitleAsync(self, titleCurrent, newTitle, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_updateMusicChangeTitle.invokeAsync(self, ((titleCurrent, newTitle), context))
+
+        def begin_updateMusicChangeTitle(self, titleCurrent, newTitle, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_updateMusicChangeTitle.begin(self, ((titleCurrent, newTitle), _response, _ex, _sent, context))
+
+        def end_updateMusicChangeTitle(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_updateMusicChangeTitle.end(self, _r)
+
         @staticmethod
         def checkedCast(proxy, facetOrContext=None, context=None):
             return _M_ApplicationArchitecturesDistribuees.ServerPrx.ice_checkedCast(proxy, '::ApplicationArchitecturesDistribuees::Server', facetOrContext, context)
@@ -71,6 +119,18 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def helloWorld(self, helloWorld, current=None):
             raise NotImplementedError("servant method 'helloWorld' not implemented")
 
+        def addMusic(self, dataMusic, current=None):
+            raise NotImplementedError("servant method 'addMusic' not implemented")
+
+        def deleteMusic(self, titleMusic, current=None):
+            raise NotImplementedError("servant method 'deleteMusic' not implemented")
+
+        def searchMusic(self, titleMusic, current=None):
+            raise NotImplementedError("servant method 'searchMusic' not implemented")
+
+        def updateMusicChangeTitle(self, titleCurrent, newTitle, current=None):
+            raise NotImplementedError("servant method 'updateMusicChangeTitle' not implemented")
+
         def __str__(self):
             return IcePy.stringify(self, _M_ApplicationArchitecturesDistribuees._t_ServerDisp)
 
@@ -80,6 +140,10 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
     Server._ice_type = _M_ApplicationArchitecturesDistribuees._t_ServerDisp
 
     Server._op_helloWorld = IcePy.Operation('helloWorld', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
+    Server._op_addMusic = IcePy.Operation('addMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
+    Server._op_deleteMusic = IcePy.Operation('deleteMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
+    Server._op_searchMusic = IcePy.Operation('searchMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
+    Server._op_updateMusicChangeTitle = IcePy.Operation('updateMusicChangeTitle', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0), ((), IcePy._t_string, False, 0)), (), None, ())
 
     _M_ApplicationArchitecturesDistribuees.Server = Server
     del Server
