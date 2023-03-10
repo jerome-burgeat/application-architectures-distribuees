@@ -9,11 +9,11 @@ with Ice.initialize(sys.argv) as communicator:
  
     app.helloWorld("Hello World!")
 
-    # data = '{"title": "test1", "url2": "www.goggle2.com"}'
-    # app.addMusic(data)
+    data = '{"title": "test1", "url2": "www.goggle2.com"}'
+    app.addMusic(data)
 
     # app.deleteMusic('test1')
 
-    app.searchMusic('test')
+    # app.searchMusic('test')
 
-    app.updateMusicChangeTitle('test', 'testUpdated')
+    # app.updateMusicChangeTitle('test', 'testUpdated')
