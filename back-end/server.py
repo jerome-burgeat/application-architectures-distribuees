@@ -14,6 +14,7 @@ class Server(ApplicationArchitecturesDistribuees.Server):
 
     def addMusic(self, dataMusic:str, current=None):
         # data = {"title": "test", "url": "www.goggle.com"}
+        print("coucou")
         dataToInsert = json.loads(dataMusic)
         result = self.collection.insert_one(dataToInsert)
 

@@ -13,10 +13,10 @@
 // </auto-generated>
 //
 
-package ApplicationArchitecturesDistribuees;
+package com.example.myapplication;
 
 /** @hidden */
-public class _ServerPrxI extends com.zeroc.Ice._ObjectPrxI implements ServerPrx
+public class _ServerPrxI extends com.zeroc.Ice._ObjectPrxI implements ApplicationArchitecturesDistribuees.ServerPrx
 {
     /** @hidden */
     public static final long serialVersionUID = 0L;

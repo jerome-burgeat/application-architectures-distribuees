@@ -15,6 +15,8 @@
 
 package ApplicationArchitecturesDistribuees;
 
+import com.example.myapplication._ServerPrxI;
+
 public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
 {
     default void helloWorld(String helloWorld)

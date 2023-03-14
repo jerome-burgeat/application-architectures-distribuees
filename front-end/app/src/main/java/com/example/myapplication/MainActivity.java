@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+
 import java.lang.Exception;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
@@ -45,17 +47,23 @@ public class MainActivity extends AppCompatActivity  {
         buttonSpeech.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("hello world! ");
                 try
                 {
                     com.zeroc.Ice.Communicator communicator = com.zeroc.Ice.Util.initialize();
-                    com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h 192.168.1.145 -p 10000");
+//                    com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h 10.0.2.2 -p 10000");
+                    com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h 10.120.25.149 -p 10000");
                     ApplicationArchitecturesDistribuees.ServerPrx app = ApplicationArchitecturesDistribuees.ServerPrx.checkedCast(base);
+                    System.out.println("hello world! ");
                     if(app == null)
                     {
                         throw new Error("Invalid proxy");
                     }
                     app.helloWorld("Hello World!");
+
+                    JSONObject json = new JSONObject();
+                    json.put("title", "test");
+                    json.put("url", "www.goggle2.com");
+                    app.addMusic(json.toString());
                 }catch (Exception e){
                     System.out.println(e);
                 }
