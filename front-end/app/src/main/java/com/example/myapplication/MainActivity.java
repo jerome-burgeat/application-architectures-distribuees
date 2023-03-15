@@ -50,8 +50,14 @@ public class MainActivity extends AppCompatActivity  {
                 try
                 {
                     com.zeroc.Ice.Communicator communicator = com.zeroc.Ice.Util.initialize();
-//                    com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h 10.0.2.2 -p 10000");
-                    com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h 10.120.25.149 -p 10000");
+                    /**
+                     * ipv4 -> le réseau que tu utilise (se trouve en tapand 'ipconfig' sur terminal de pc qui tourne serveur)
+                     * le réseau utilisé de téléphonne qui tourne application doit être sous le même réseau que celui de serveur
+                     * spécifique pour emulator : 10.0.2.2
+                     * normalent pour CERI: 10.120.25.149
+                     */
+                    String ipv4 = "192.168.1.145";
+                    com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h " + ipv4 + " -p 10000");
                     ApplicationArchitecturesDistribuees.ServerPrx app = ApplicationArchitecturesDistribuees.ServerPrx.checkedCast(base);
                     System.out.println("hello world! ");
                     if(app == null)
