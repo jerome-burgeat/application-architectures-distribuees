@@ -8,9 +8,29 @@ class Server(ApplicationArchitecturesDistribuees.Server):
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["mydb"]
     collection = db["test"]
+    
+    def __init__(self):
+        self.index = 0
+        self.uploadingFiles = {}
 
     def helloWorld(self, helloWorld, current=None):
         print(helloWorld)
+        
+    def getNewIndex(self, current=None):
+        index = self.index
+        self.index += 1
+        return index
+       
+    def uploadPart(self, id, part, current=None):
+        if id not in self.uploadingFiles : self.uploadingFiles[id] = b""
+        self.uploadingFiles[id] += part
+        return 0
+        
+    def uploadFile(self, id, filename, current=None):
+        file = open("musics/" + filename, "wb")
+        file.write(self.uploadingFiles[id])
+        file.close()
+        return 0
 
     def addMusic(self, dataMusic:str, current=None):
         # data = {"title": "test", "url": "www.goggle.com"}

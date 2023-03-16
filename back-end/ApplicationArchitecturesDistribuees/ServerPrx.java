@@ -53,6 +53,127 @@ public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
         return f;
     }
 
+    default int getNewIndex()
+    {
+        return getNewIndex(com.zeroc.Ice.ObjectPrx.noExplicitContext);
+    }
+
+    default int getNewIndex(java.util.Map<String, String> context)
+    {
+        return _iceI_getNewIndexAsync(context, true).waitForResponse();
+    }
+
+    default java.util.concurrent.CompletableFuture<java.lang.Integer> getNewIndexAsync()
+    {
+        return _iceI_getNewIndexAsync(com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+    }
+
+    default java.util.concurrent.CompletableFuture<java.lang.Integer> getNewIndexAsync(java.util.Map<String, String> context)
+    {
+        return _iceI_getNewIndexAsync(context, false);
+    }
+
+    /**
+     * @hidden
+     * @param context -
+     * @param sync -
+     * @return -
+     **/
+    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Integer> _iceI_getNewIndexAsync(java.util.Map<String, String> context, boolean sync)
+    {
+        com.zeroc.IceInternal.OutgoingAsync<java.lang.Integer> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "getNewIndex", null, sync, null);
+        f.invoke(true, context, null, null, istr -> {
+                     int ret;
+                     ret = istr.readInt();
+                     return ret;
+                 });
+        return f;
+    }
+
+    default boolean uploadPart(int id, byte[] part)
+    {
+        return uploadPart(id, part, com.zeroc.Ice.ObjectPrx.noExplicitContext);
+    }
+
+    default boolean uploadPart(int id, byte[] part, java.util.Map<String, String> context)
+    {
+        return _iceI_uploadPartAsync(id, part, context, true).waitForResponse();
+    }
+
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadPartAsync(int id, byte[] part)
+    {
+        return _iceI_uploadPartAsync(id, part, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+    }
+
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadPartAsync(int id, byte[] part, java.util.Map<String, String> context)
+    {
+        return _iceI_uploadPartAsync(id, part, context, false);
+    }
+
+    /**
+     * @hidden
+     * @param iceP_id -
+     * @param iceP_part -
+     * @param context -
+     * @param sync -
+     * @return -
+     **/
+    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> _iceI_uploadPartAsync(int iceP_id, byte[] iceP_part, java.util.Map<String, String> context, boolean sync)
+    {
+        com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "uploadPart", null, sync, null);
+        f.invoke(true, context, null, ostr -> {
+                     ostr.writeInt(iceP_id);
+                     ostr.writeByteSeq(iceP_part);
+                 }, istr -> {
+                     boolean ret;
+                     ret = istr.readBool();
+                     return ret;
+                 });
+        return f;
+    }
+
+    default boolean uploadFile(int id, String filename)
+    {
+        return uploadFile(id, filename, com.zeroc.Ice.ObjectPrx.noExplicitContext);
+    }
+
+    default boolean uploadFile(int id, String filename, java.util.Map<String, String> context)
+    {
+        return _iceI_uploadFileAsync(id, filename, context, true).waitForResponse();
+    }
+
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadFileAsync(int id, String filename)
+    {
+        return _iceI_uploadFileAsync(id, filename, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+    }
+
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadFileAsync(int id, String filename, java.util.Map<String, String> context)
+    {
+        return _iceI_uploadFileAsync(id, filename, context, false);
+    }
+
+    /**
+     * @hidden
+     * @param iceP_id -
+     * @param iceP_filename -
+     * @param context -
+     * @param sync -
+     * @return -
+     **/
+    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> _iceI_uploadFileAsync(int iceP_id, String iceP_filename, java.util.Map<String, String> context, boolean sync)
+    {
+        com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "uploadFile", null, sync, null);
+        f.invoke(true, context, null, ostr -> {
+                     ostr.writeInt(iceP_id);
+                     ostr.writeString(iceP_filename);
+                 }, istr -> {
+                     boolean ret;
+                     ret = istr.readBool();
+                     return ret;
+                 });
+        return f;
+    }
+
     default void addMusic(String dataMusic)
     {
         addMusic(dataMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext);

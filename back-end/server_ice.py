@@ -21,6 +21,9 @@ import Ice, IcePy
 _M_ApplicationArchitecturesDistribuees = Ice.openModule('ApplicationArchitecturesDistribuees')
 __name__ = 'ApplicationArchitecturesDistribuees'
 
+if '_t_byteList' not in _M_ApplicationArchitecturesDistribuees.__dict__:
+    _M_ApplicationArchitecturesDistribuees._t_byteList = IcePy.defineSequence('::ApplicationArchitecturesDistribuees::byteList', (), IcePy._t_byte)
+
 _M_ApplicationArchitecturesDistribuees._t_Server = IcePy.defineValue('::ApplicationArchitecturesDistribuees::Server', Ice.Value, -1, (), False, True, None, ())
 
 if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
@@ -38,6 +41,42 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
 
         def end_helloWorld(self, _r):
             return _M_ApplicationArchitecturesDistribuees.Server._op_helloWorld.end(self, _r)
+
+        def getNewIndex(self, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getNewIndex.invoke(self, ((), context))
+
+        def getNewIndexAsync(self, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getNewIndex.invokeAsync(self, ((), context))
+
+        def begin_getNewIndex(self, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getNewIndex.begin(self, ((), _response, _ex, _sent, context))
+
+        def end_getNewIndex(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getNewIndex.end(self, _r)
+
+        def uploadPart(self, id, part, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadPart.invoke(self, ((id, part), context))
+
+        def uploadPartAsync(self, id, part, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadPart.invokeAsync(self, ((id, part), context))
+
+        def begin_uploadPart(self, id, part, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadPart.begin(self, ((id, part), _response, _ex, _sent, context))
+
+        def end_uploadPart(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadPart.end(self, _r)
+
+        def uploadFile(self, id, filename, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.invoke(self, ((id, filename), context))
+
+        def uploadFileAsync(self, id, filename, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.invokeAsync(self, ((id, filename), context))
+
+        def begin_uploadFile(self, id, filename, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.begin(self, ((id, filename), _response, _ex, _sent, context))
+
+        def end_uploadFile(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.end(self, _r)
 
         def addMusic(self, dataMusic, context=None):
             return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.invoke(self, ((dataMusic, ), context))
@@ -119,6 +158,15 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def helloWorld(self, helloWorld, current=None):
             raise NotImplementedError("servant method 'helloWorld' not implemented")
 
+        def getNewIndex(self, current=None):
+            raise NotImplementedError("servant method 'getNewIndex' not implemented")
+
+        def uploadPart(self, id, part, current=None):
+            raise NotImplementedError("servant method 'uploadPart' not implemented")
+
+        def uploadFile(self, id, filename, current=None):
+            raise NotImplementedError("servant method 'uploadFile' not implemented")
+
         def addMusic(self, dataMusic, current=None):
             raise NotImplementedError("servant method 'addMusic' not implemented")
 
@@ -140,6 +188,9 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
     Server._ice_type = _M_ApplicationArchitecturesDistribuees._t_ServerDisp
 
     Server._op_helloWorld = IcePy.Operation('helloWorld', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
+    Server._op_getNewIndex = IcePy.Operation('getNewIndex', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), IcePy._t_int, False, 0), ())
+    Server._op_uploadPart = IcePy.Operation('uploadPart', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), _M_ApplicationArchitecturesDistribuees._t_byteList, False, 0)), (), ((), IcePy._t_bool, False, 0), ())
+    Server._op_uploadFile = IcePy.Operation('uploadFile', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), IcePy._t_string, False, 0)), (), ((), IcePy._t_bool, False, 0), ())
     Server._op_addMusic = IcePy.Operation('addMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
     Server._op_deleteMusic = IcePy.Operation('deleteMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
     Server._op_searchMusic = IcePy.Operation('searchMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
