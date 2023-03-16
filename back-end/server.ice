@@ -8,8 +8,7 @@ module ApplicationArchitecturesDistribuees
         void helloWorld(string helloWorld);
 		int getNewIndex();
 		bool uploadPart(int id, byteList part);
-		bool uploadFile(int id, string filename);
-        void addMusic(string dataMusic);
+		bool uploadFileAndInsertMusic(int id, string filename);
         void deleteMusic(string titleMusic);
         void searchMusic(string titleMusic);
         void updateMusicChangeTitle(string titleCurrent, string newTitle);

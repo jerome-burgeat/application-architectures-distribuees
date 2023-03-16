@@ -23,9 +23,7 @@ public interface Server extends com.zeroc.Ice.Object
 
     boolean uploadPart(int id, byte[] part, com.zeroc.Ice.Current current);
 
-    boolean uploadFile(int id, String filename, com.zeroc.Ice.Current current);
-
-    void addMusic(String dataMusic, com.zeroc.Ice.Current current);
+    boolean uploadFileAndInsertMusic(int id, String filename, com.zeroc.Ice.Current current);
 
     void deleteMusic(String titleMusic, com.zeroc.Ice.Current current);
 
@@ -123,7 +121,7 @@ public interface Server extends com.zeroc.Ice.Object
      * @param current -
      * @return -
     **/
-    static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_uploadFile(Server obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
+    static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_uploadFileAndInsertMusic(Server obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         com.zeroc.Ice.InputStream istr = inS.startReadParams();
@@ -132,29 +130,11 @@ public interface Server extends com.zeroc.Ice.Object
         iceP_id = istr.readInt();
         iceP_filename = istr.readString();
         inS.endReadParams();
-        boolean ret = obj.uploadFile(iceP_id, iceP_filename, current);
+        boolean ret = obj.uploadFileAndInsertMusic(iceP_id, iceP_filename, current);
         com.zeroc.Ice.OutputStream ostr = inS.startWriteParams();
         ostr.writeBool(ret);
         inS.endWriteParams(ostr);
         return inS.setResult(ostr);
-    }
-
-    /**
-     * @hidden
-     * @param obj -
-     * @param inS -
-     * @param current -
-     * @return -
-    **/
-    static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_addMusic(Server obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
-    {
-        com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
-        com.zeroc.Ice.InputStream istr = inS.startReadParams();
-        String iceP_dataMusic;
-        iceP_dataMusic = istr.readString();
-        inS.endReadParams();
-        obj.addMusic(iceP_dataMusic, current);
-        return inS.setResult(inS.writeEmptyParams());
     }
 
     /**
@@ -216,7 +196,6 @@ public interface Server extends com.zeroc.Ice.Object
     /** @hidden */
     final static String[] _iceOps =
     {
-        "addMusic",
         "deleteMusic",
         "getNewIndex",
         "helloWorld",
@@ -226,7 +205,7 @@ public interface Server extends com.zeroc.Ice.Object
         "ice_ping",
         "searchMusic",
         "updateMusicChangeTitle",
-        "uploadFile",
+        "uploadFileAndInsertMusic",
         "uploadPart"
     };
 
@@ -245,49 +224,45 @@ public interface Server extends com.zeroc.Ice.Object
         {
             case 0:
             {
-                return _iceD_addMusic(this, in, current);
+                return _iceD_deleteMusic(this, in, current);
             }
             case 1:
             {
-                return _iceD_deleteMusic(this, in, current);
+                return _iceD_getNewIndex(this, in, current);
             }
             case 2:
             {
-                return _iceD_getNewIndex(this, in, current);
+                return _iceD_helloWorld(this, in, current);
             }
             case 3:
             {
-                return _iceD_helloWorld(this, in, current);
+                return com.zeroc.Ice.Object._iceD_ice_id(this, in, current);
             }
             case 4:
             {
-                return com.zeroc.Ice.Object._iceD_ice_id(this, in, current);
+                return com.zeroc.Ice.Object._iceD_ice_ids(this, in, current);
             }
             case 5:
             {
-                return com.zeroc.Ice.Object._iceD_ice_ids(this, in, current);
+                return com.zeroc.Ice.Object._iceD_ice_isA(this, in, current);
             }
             case 6:
             {
-                return com.zeroc.Ice.Object._iceD_ice_isA(this, in, current);
+                return com.zeroc.Ice.Object._iceD_ice_ping(this, in, current);
             }
             case 7:
             {
-                return com.zeroc.Ice.Object._iceD_ice_ping(this, in, current);
+                return _iceD_searchMusic(this, in, current);
             }
             case 8:
             {
-                return _iceD_searchMusic(this, in, current);
+                return _iceD_updateMusicChangeTitle(this, in, current);
             }
             case 9:
             {
-                return _iceD_updateMusicChangeTitle(this, in, current);
+                return _iceD_uploadFileAndInsertMusic(this, in, current);
             }
             case 10:
-            {
-                return _iceD_uploadFile(this, in, current);
-            }
-            case 11:
             {
                 return _iceD_uploadPart(this, in, current);
             }

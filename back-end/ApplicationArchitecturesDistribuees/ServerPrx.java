@@ -132,24 +132,24 @@ public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
         return f;
     }
 
-    default boolean uploadFile(int id, String filename)
+    default boolean uploadFileAndInsertMusic(int id, String filename)
     {
-        return uploadFile(id, filename, com.zeroc.Ice.ObjectPrx.noExplicitContext);
+        return uploadFileAndInsertMusic(id, filename, com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
-    default boolean uploadFile(int id, String filename, java.util.Map<String, String> context)
+    default boolean uploadFileAndInsertMusic(int id, String filename, java.util.Map<String, String> context)
     {
-        return _iceI_uploadFileAsync(id, filename, context, true).waitForResponse();
+        return _iceI_uploadFileAndInsertMusicAsync(id, filename, context, true).waitForResponse();
     }
 
-    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadFileAsync(int id, String filename)
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadFileAndInsertMusicAsync(int id, String filename)
     {
-        return _iceI_uploadFileAsync(id, filename, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+        return _iceI_uploadFileAndInsertMusicAsync(id, filename, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
     }
 
-    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadFileAsync(int id, String filename, java.util.Map<String, String> context)
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> uploadFileAndInsertMusicAsync(int id, String filename, java.util.Map<String, String> context)
     {
-        return _iceI_uploadFileAsync(id, filename, context, false);
+        return _iceI_uploadFileAndInsertMusicAsync(id, filename, context, false);
     }
 
     /**
@@ -160,9 +160,9 @@ public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
      * @param sync -
      * @return -
      **/
-    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> _iceI_uploadFileAsync(int iceP_id, String iceP_filename, java.util.Map<String, String> context, boolean sync)
+    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> _iceI_uploadFileAndInsertMusicAsync(int iceP_id, String iceP_filename, java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "uploadFile", null, sync, null);
+        com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "uploadFileAndInsertMusic", null, sync, null);
         f.invoke(true, context, null, ostr -> {
                      ostr.writeInt(iceP_id);
                      ostr.writeString(iceP_filename);
@@ -171,42 +171,6 @@ public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
                      ret = istr.readBool();
                      return ret;
                  });
-        return f;
-    }
-
-    default void addMusic(String dataMusic)
-    {
-        addMusic(dataMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext);
-    }
-
-    default void addMusic(String dataMusic, java.util.Map<String, String> context)
-    {
-        _iceI_addMusicAsync(dataMusic, context, true).waitForResponse();
-    }
-
-    default java.util.concurrent.CompletableFuture<Void> addMusicAsync(String dataMusic)
-    {
-        return _iceI_addMusicAsync(dataMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
-    }
-
-    default java.util.concurrent.CompletableFuture<Void> addMusicAsync(String dataMusic, java.util.Map<String, String> context)
-    {
-        return _iceI_addMusicAsync(dataMusic, context, false);
-    }
-
-    /**
-     * @hidden
-     * @param iceP_dataMusic -
-     * @param context -
-     * @param sync -
-     * @return -
-     **/
-    default com.zeroc.IceInternal.OutgoingAsync<Void> _iceI_addMusicAsync(String iceP_dataMusic, java.util.Map<String, String> context, boolean sync)
-    {
-        com.zeroc.IceInternal.OutgoingAsync<Void> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "addMusic", null, sync, null);
-        f.invoke(false, context, null, ostr -> {
-                     ostr.writeString(iceP_dataMusic);
-                 }, null);
         return f;
     }
 

@@ -66,29 +66,17 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def end_uploadPart(self, _r):
             return _M_ApplicationArchitecturesDistribuees.Server._op_uploadPart.end(self, _r)
 
-        def uploadFile(self, id, filename, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.invoke(self, ((id, filename), context))
+        def uploadFileAndInsertMusic(self, id, filename, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFileAndInsertMusic.invoke(self, ((id, filename), context))
 
-        def uploadFileAsync(self, id, filename, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.invokeAsync(self, ((id, filename), context))
+        def uploadFileAndInsertMusicAsync(self, id, filename, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFileAndInsertMusic.invokeAsync(self, ((id, filename), context))
 
-        def begin_uploadFile(self, id, filename, _response=None, _ex=None, _sent=None, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.begin(self, ((id, filename), _response, _ex, _sent, context))
+        def begin_uploadFileAndInsertMusic(self, id, filename, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFileAndInsertMusic.begin(self, ((id, filename), _response, _ex, _sent, context))
 
-        def end_uploadFile(self, _r):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFile.end(self, _r)
-
-        def addMusic(self, dataMusic, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.invoke(self, ((dataMusic, ), context))
-
-        def addMusicAsync(self, dataMusic, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.invokeAsync(self, ((dataMusic, ), context))
-
-        def begin_addMusic(self, dataMusic, _response=None, _ex=None, _sent=None, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.begin(self, ((dataMusic, ), _response, _ex, _sent, context))
-
-        def end_addMusic(self, _r):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_addMusic.end(self, _r)
+        def end_uploadFileAndInsertMusic(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_uploadFileAndInsertMusic.end(self, _r)
 
         def deleteMusic(self, titleMusic, context=None):
             return _M_ApplicationArchitecturesDistribuees.Server._op_deleteMusic.invoke(self, ((titleMusic, ), context))
@@ -164,11 +152,8 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def uploadPart(self, id, part, current=None):
             raise NotImplementedError("servant method 'uploadPart' not implemented")
 
-        def uploadFile(self, id, filename, current=None):
-            raise NotImplementedError("servant method 'uploadFile' not implemented")
-
-        def addMusic(self, dataMusic, current=None):
-            raise NotImplementedError("servant method 'addMusic' not implemented")
+        def uploadFileAndInsertMusic(self, id, filename, current=None):
+            raise NotImplementedError("servant method 'uploadFileAndInsertMusic' not implemented")
 
         def deleteMusic(self, titleMusic, current=None):
             raise NotImplementedError("servant method 'deleteMusic' not implemented")
@@ -190,8 +175,7 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
     Server._op_helloWorld = IcePy.Operation('helloWorld', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
     Server._op_getNewIndex = IcePy.Operation('getNewIndex', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), IcePy._t_int, False, 0), ())
     Server._op_uploadPart = IcePy.Operation('uploadPart', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), _M_ApplicationArchitecturesDistribuees._t_byteList, False, 0)), (), ((), IcePy._t_bool, False, 0), ())
-    Server._op_uploadFile = IcePy.Operation('uploadFile', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), IcePy._t_string, False, 0)), (), ((), IcePy._t_bool, False, 0), ())
-    Server._op_addMusic = IcePy.Operation('addMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
+    Server._op_uploadFileAndInsertMusic = IcePy.Operation('uploadFileAndInsertMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), IcePy._t_string, False, 0)), (), ((), IcePy._t_bool, False, 0), ())
     Server._op_deleteMusic = IcePy.Operation('deleteMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
     Server._op_searchMusic = IcePy.Operation('searchMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
     Server._op_updateMusicChangeTitle = IcePy.Operation('updateMusicChangeTitle', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0), ((), IcePy._t_string, False, 0)), (), None, ())

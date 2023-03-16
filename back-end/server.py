@@ -1,13 +1,15 @@
+import os
 import sys, Ice
 import ApplicationArchitecturesDistribuees
 import pymongo
 import json
+from mutagen.mp3 import MP3
  
 class Server(ApplicationArchitecturesDistribuees.Server):
 
     client = pymongo.MongoClient("mongodb://localhost:27017/")
     db = client["mydb"]
-    collection = db["test"]
+    collection = db["musics"]
     
     def __init__(self):
         self.index = 0
@@ -26,17 +28,24 @@ class Server(ApplicationArchitecturesDistribuees.Server):
         self.uploadingFiles[id] += part
         return 0
         
-    def uploadFile(self, id, filename, current=None):
+    def uploadFileAndInsertMusic(self, id, filename, current=None):
+        print("upload file ... ")
         file = open("musics/" + filename, "wb")
         file.write(self.uploadingFiles[id])
         file.close()
-        return 0
-
-    def addMusic(self, dataMusic:str, current=None):
-        # data = {"title": "test", "url": "www.goggle.com"}
-        print("coucou")
-        dataToInsert = json.loads(dataMusic)
+        # fd = file.fileno()
+        # print("file infos: " , os.stat("musics/" + filename).st_file_attributes)
+        audio = MP3("musics/" + filename)
+        artist = audio['TPE1'].text[0] if 'TPE1' in audio else None
+        title = audio['TIT2'].text[0] if 'TIT2' in audio else None
+        album = audio['TALB'].text[0] if 'TALB' in audio else None
+        print("file infos: " , title, album, artist)
+        print("upload file successfuly! ")
+        musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "url": ' + '"musics/' + filename + '"}'
+        dataToInsert = json.loads(musicData)
         result = self.collection.insert_one(dataToInsert)
+        # print("result: " + result)
+        return 0
 
     def deleteMusic(self, titleMusic:str, current=None):
         result = self.collection.delete_one({"title": titleMusic})

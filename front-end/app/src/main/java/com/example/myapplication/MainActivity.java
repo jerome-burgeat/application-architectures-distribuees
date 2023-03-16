@@ -76,10 +76,7 @@ public class MainActivity extends AppCompatActivity  {
 
         if (intent.hasExtra(Intent.EXTRA_STREAM)){
             Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-//            System.out.println("Path file is : " + uri.getPath());
             System.out.println(uri.getPath()); // not real path, its path and(/) id of File
-//            String[] segments = uri.getPath().split("/");
-//            int mediaId = Integer.parseInt(segments[segments.length - 1]);
             int mediaId = Integer.parseInt(splitStr(uri.getPath()));
             System.out.println(mediaId);
             Uri mediaUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId);
@@ -96,15 +93,6 @@ public class MainActivity extends AppCompatActivity  {
                 fileMusic = new File(filePath);
 
                 System.out.println(fileMusic.getName());
-
-                InputStream fis = new FileInputStream(fileMusic);
-                long fileSize = fileMusic.length(); // 获取文件大小，单位为字节
-                System.out.println(fileSize);
-                byte[] bytes = new byte[(int)fileMusic.length()]; // 创建字节数组，用于存放文件内容
-                long quotient = fileSize / 102400;
-                long remainder = fileSize % 102400;
-//                System.out.println(app.);
-                fis.close();
 
             }
         }
@@ -152,12 +140,6 @@ public class MainActivity extends AppCompatActivity  {
         buttonSpeech.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-////                    JSONObject json = new JSONObject();
-////                    json.put("title", "test");
-////                    json.put("url", "www.goggle2.com");
-////                    app.addMusic(json.toString());
-//
-
 
                 app.helloWorld("Hello World!");
 
@@ -224,7 +206,7 @@ public class MainActivity extends AppCompatActivity  {
                             app.uploadPart(id, bytes);
                             System.out.println(fis);
                             fis.close(); // 关闭文件输入流
-                            app.uploadFile(id, fileMusic.getName());
+                            app.uploadFileAndInsertMusic(id, fileMusic.getName());
                         } catch (IOException e) {
                             // 处理异常
                         }
@@ -266,7 +248,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 } else {
                     // 未获取到读取存储权限
-                    System.out.println("not access to read !");
+                    System.out.println("not get access to read !");
                 }
                 break;
             case WRITE_EXTERNAL_STORAGE_REQUEST_CODE:
@@ -300,7 +282,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 } else {
                     // 未获取到写入存储权限
-                    System.out.println("not access to write !");
+                    System.out.println("not get access to write !");
                 }
                 break;
             default:
