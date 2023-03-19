@@ -1,5 +1,9 @@
 package com.example.myapplication;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.util.TypedValue;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -21,10 +25,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -55,6 +55,10 @@ public class MainActivity extends AppCompatActivity  {
     SeekBar musicSeekBar;
     Button buttonPlay, buttonPrevious, buttonNext, buttonSpeech;
     File fileMusic;
+
+    private EditText mUserInput;
+    LinearLayout mUserInputHistory;
+    private Button mSendButton;
 
     String splitStr(String str){
         String[] segments = str.split("/");
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity  {
              * spécifique pour emulator : 10.0.2.2
              * normalent pour CERI: 10.120.25.149
              */
-            String ipv4 = "192.168.1.145";
+            String ipv4 = "10.0.2.2";
             com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h " + ipv4 + " -p 10000");
             app = ApplicationArchitecturesDistribuees.ServerPrx.checkedCast(base);
             System.out.println("hello world! ");
@@ -134,6 +138,10 @@ public class MainActivity extends AppCompatActivity  {
         buttonPrevious = findViewById(R.id.button_previous);
         buttonNext = findViewById(R.id.button_next);
         buttonSpeech = findViewById(R.id.button_speech);
+
+        mUserInput = findViewById(R.id.userInput);
+        mUserInputHistory = findViewById(R.id.userInputHistory);
+        mSendButton = findViewById(R.id.sendButton);
 
         musicTitle.setSelected(true);
 
@@ -218,6 +226,17 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message = mUserInput.getText().toString().trim();
+                if (!message.isEmpty()) {
+                    addMessageToChat("User: " + message, Color.WHITE, View.TEXT_ALIGNMENT_TEXT_END);
+                    addMessageToChat("Bot: " + "Response", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                    mUserInput.setText("");
+                }
+            }
+        });
 
     }
 
@@ -288,6 +307,17 @@ public class MainActivity extends AppCompatActivity  {
             default:
                 break;
         }
+    }
+
+    private void addMessageToChat(String message, int color, int alignement) {
+        TextView userTextView = new TextView(this);
+        userTextView.setText(message);
+        userTextView.setTextColor(color);
+        userTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        userTextView.setTypeface(null, Typeface.BOLD);
+        userTextView.setTextAlignment(alignement);
+        mUserInputHistory.addView(userTextView);
+
     }
 
 }
