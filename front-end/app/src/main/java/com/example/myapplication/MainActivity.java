@@ -1,41 +1,41 @@
 package com.example.myapplication;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.util.TypedValue;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.zeroc.Ice.*;
-
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Exception;
-import java.lang.reflect.Modifier;
+import java.net.URLEncoder;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity  {
@@ -50,11 +50,19 @@ public class MainActivity extends AppCompatActivity  {
 
 //    private static final int REQUEST_WRITE_STORAGE = 112;
 
+    private AudioManager audio;
+
+
     ImageView musicImage;
     TextView musicTitle, musicTimePass, musicTimeRest;
     SeekBar musicSeekBar;
     Button buttonPlay, buttonPrevious, buttonNext, buttonSpeech;
     File fileMusic;
+
+    private EditText mUserInput;
+    LinearLayout mUserInputHistory;
+    private Button mSendButton;
+
 
     String splitStr(String str){
         String[] segments = str.split("/");
@@ -102,18 +110,21 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        audio = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+
+
         Objects.requireNonNull(getSupportActionBar()).hide();
 
         try
         {
-            communicator = com.zeroc.Ice.Util.initialize();
+            //communicator = com.zeroc.Ice.Util.initialize();
             /**
              * ipv4 -> le réseau que tu utilise (se trouve en tapand 'ipconfig' sur terminal de pc qui tourne serveur)
              * le réseau utilisé de téléphonne qui tourne application doit être sous le même réseau que celui de serveur
              * spécifique pour emulator : 10.0.2.2
              * normalent pour CERI: 10.120.25.149
              */
-            String ipv4 = "192.168.1.145";
+            String ipv4 = "10.0.2.2";
             com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h " + ipv4 + " -p 10000");
             app = ApplicationArchitecturesDistribuees.ServerPrx.checkedCast(base);
             System.out.println("hello world! ");
@@ -134,6 +145,10 @@ public class MainActivity extends AppCompatActivity  {
         buttonPrevious = findViewById(R.id.button_previous);
         buttonNext = findViewById(R.id.button_next);
         buttonSpeech = findViewById(R.id.button_speech);
+
+        mUserInput = findViewById(R.id.userInput);
+        mUserInputHistory = findViewById(R.id.userInputHistory);
+        mSendButton = findViewById(R.id.sendButton);
 
         musicTitle.setSelected(true);
 
@@ -218,6 +233,21 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message = mUserInput.getText().toString().trim();
+                if (!message.isEmpty()) {
+                    try {
+                        addMessageToChat("User: " + message, Color.WHITE, View.TEXT_ALIGNMENT_TEXT_END);
+                        addBotResponseToChat("Bot: " + message, Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    mUserInput.setText("");
+                }
+            }
+        });
 
     }
 
@@ -288,6 +318,103 @@ public class MainActivity extends AppCompatActivity  {
             default:
                 break;
         }
+    }
+
+    private void addMessageToChat(String message, int color, int alignement) throws IOException {
+        TextView textView = new TextView(this);
+        textView.setText(message);
+        textView.setTextColor(color);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        textView.setTypeface(null, Typeface.BOLD);
+        textView.setTextAlignment(alignement);
+        mUserInputHistory.addView(textView);
+    }
+
+    public void addBotResponseToChat(String message, int color, int alignement) throws IOException {
+        // Définir l'URL de l'API Flask avec l'argument "tal" en tant que chaîne de caractères
+        String url = "http://192.168.1.11:5000/api/tal?requete=" + URLEncoder.encode(message, "UTF-8");
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5000/api/tal?requete="+message).build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Impossible de se connecter au serveur", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            //addMessageToChat("Bot: " + response.peekBody(2048).string(), color, alignement);
+                            verifierActions(response.peekBody(2048).string());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public void verifierActions(String actions) throws JSONException, IOException {
+        JSONObject jObject = new JSONObject(actions);
+        String aJsonString = jObject.getString("Action");
+        String[] arr = null;
+        arr = aJsonString.split(",");
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = adapterReponse(arr[i]);
+            traiterActions(arr[i]);
+            //addMessageToChat("Bot: " + arr[i], Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+        }
+    }
+
+    public void traiterActions(String action) throws IOException {
+        switch (action) {
+            case "JOUER":
+                addMessageToChat("Bot: La musique est lancée", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                break;
+            case "PAUSE":
+                addMessageToChat("Bot: La musique en pause", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                break;
+            case "AUGMENTER":
+                addMessageToChat("Bot: Le son est augmenté", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                audio.adjustVolume(AudioManager.ADJUST_RAISE,0);
+                //Toast.makeText(MainActivity.this, "Volume : " + audio.getStreamVolume(AudioManager.STREAM_SYSTEM), Toast.LENGTH_LONG).show();
+                break;
+            case "BAISSER":
+                addMessageToChat("Bot: Le son est baissé", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                audio.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_PLAY_SOUND);
+                break;
+            case "COUPE":
+                addMessageToChat("Bot: Le son est coupé", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                audio.adjustVolume(AudioManager.ADJUST_MUTE, AudioManager.FLAG_PLAY_SOUND);
+                break;
+            case "REMET LE SON":
+                addMessageToChat("Bot: Le son est remis", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                audio.adjustVolume(AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_PLAY_SOUND);
+                break;
+            default:
+                addMessageToChat("Bot: Je ne comprends pas la requête", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+        }
+    }
+
+    public String adapterReponse(String mot) {
+        while (mot.contains("\""))
+            mot = mot.replace("\"", "");
+        if (mot.contains("["))
+            mot = mot.replace("[", "");
+        if (mot.contains("]"))
+            mot = mot.replace("]", "");
+        return mot;
     }
 
 }

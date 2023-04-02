@@ -1,145 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/appBackground"
-    tools:context=".MainActivity">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   android:background="@color/appBackground"
+                                                   tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/button_speech"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/button_speech"
-        android:contentDescription="@string/app_name"
-        android:elevation="50dp"
-        android:text=""
-        app:backgroundTint="@null"
-        app:cornerRadius="230dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent" />
-
+            android:id="@+id/button_speech"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginBottom="248dp"
+            android:background="@drawable/button_speech"
+            android:contentDescription="@string/app_name"
+            android:elevation="50dp"
+            android:text=""
+            app:backgroundTint="@null"
+            app:cornerRadius="230dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.876"/>
     <ImageView
-        android:id="@+id/music_image"
-        android:layout_width="205dp"
-        android:layout_height="232dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/music_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ImageContrastCheck"
-        android:src="@drawable/music_images_default" />
+            android:id="@+id/music_image"
+            android:layout_width="205dp"
+            android:layout_height="232dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/music_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ImageContrastCheck"
+            android:src="@drawable/music_images_default" />
 
     <TextView
-        android:id="@+id/music_title"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:ellipsize="marquee"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="center"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:scrollHorizontally="true"
-        android:singleLine="true"
-        android:text="@string/music_title"
-        android:textColor="@color/white"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.588"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/music_image" />
+            android:id="@+id/music_title"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:ellipsize="marquee"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="@string/music_title"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.588"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/music_image" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
     <SeekBar
-        android:id="@+id/music_seekBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:thumbTint="@color/seekBarColord1"
-        android:progressBackgroundTint="@color/white"
-        android:progressTint="@color/seekBarColord1"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/music_title" />
+            android:id="@+id/music_seekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:thumbTint="@color/seekBarColord1"
+            android:progressBackgroundTint="@color/white"
+            android:progressTint="@color/seekBarColord1"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/music_title" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.55" />
+            android:id="@+id/guideline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.55" />
 
     <Button
-        android:id="@+id/button_play"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/ic_baseline_play_arrow_24"
-        android:contentDescription="@string/button_play"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toTopOf="@+id/guideline6"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintHorizontal_bias="0.519"
-        app:layout_constraintStart_toStartOf="@+id/guideline3" />
+            android:id="@+id/button_play"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ic_baseline_play_arrow_24"
+            android:contentDescription="@string/button_play"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toTopOf="@+id/guideline6"
+            app:layout_constraintEnd_toStartOf="@+id/guideline3"
+            app:layout_constraintHorizontal_bias="0.519"
+            app:layout_constraintStart_toStartOf="@+id/guideline3" />
 
     <Button
-        android:id="@+id/button_next"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="37dp"
-        android:background="@drawable/ic_baseline_skip_next_24"
-        android:contentDescription="@string/button_next"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toTopOf="@+id/guideline6"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.949"
-        app:layout_constraintStart_toStartOf="@+id/guideline3" />
+            android:id="@+id/button_next"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="37dp"
+            android:background="@drawable/ic_baseline_skip_next_24"
+            android:contentDescription="@string/button_next"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toTopOf="@+id/guideline6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.949"
+            app:layout_constraintStart_toStartOf="@+id/guideline3" />
 
     <Button
-        android:id="@+id/button_previous"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="37dp"
-        android:background="@drawable/ic_baseline_skip_previous_24"
-        android:contentDescription="@string/button_previous"
-        app:backgroundTint="@null"
-        app:layout_constraintBottom_toTopOf="@+id/guideline6"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintHorizontal_bias="0.009"
-        app:layout_constraintStart_toStartOf="parent" />
+            android:id="@+id/button_previous"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="37dp"
+            android:background="@drawable/ic_baseline_skip_previous_24"
+            android:contentDescription="@string/button_previous"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toTopOf="@+id/guideline6"
+            app:layout_constraintEnd_toStartOf="@+id/guideline3"
+            app:layout_constraintHorizontal_bias="0.009"
+            app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/music_time_pass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="1dp"
-        android:text="@string/music_time_pass"
-        android:textColor="@color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/music_seekBar" />
+            android:id="@+id/music_time_pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="1dp"
+            android:text="@string/music_time_pass"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/music_seekBar" />
 
     <TextView
-        android:id="@+id/music_time_rest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/music_time_rest"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/music_seekBar" />
+            android:id="@+id/music_time_rest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/music_time_rest"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/music_seekBar" />
+
+    <ScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="374dp"
+            android:layout_height="146dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="76dp">
+        <LinearLayout android:id="@+id/userInputHistory"
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                      android:layout_weight="1"
+                      android:textColor="@color/white"
+                      android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+    <EditText
+            android:id="@+id/userInput"
+            android:layout_width="213dp"
+            android:layout_height="54dp"
+            android:layout_weight="1"
+            android:hint="Entrer votre requête"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:imeOptions="actionSend"
+            android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
+            android:maxLines="4"
+            android:minLines="1" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.161" android:layout_marginBottom="8dp"/>
+    <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Envoyer"
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.867"
+            android:layout_marginBottom="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
