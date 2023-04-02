@@ -3,75 +3,77 @@ import os.path
 import sys
 import re
 from pathlib import Path
+from flask import Flask, jsonify, request
 
+app = Flask(__name__)
 sys.path.append(os.getcwd())
 
-text = "Monte le son et joue-moi une musique."
-listOfAction = []
+#text = "Monte le son et joue-moi une musique."
+listeDesActions = []
 
 
-def verifyDirectory(filename):
-    path = Path(os.getcwd() + "\\ressources\\" + filename)
-    #print(path.exists())
-    if path.exists():
+def isDossierExiste(fichier):
+    chemin_access = Path(os.getcwd() + "\\ressources\\" + fichier)
+    #print(chemin_access.exists())
+    if chemin_access.exists():
         return True
     return False
 
 
-def FileIntoList(filename):
+def FichierAListe(fichier):
     """
     Search if the file exists in ressources depending on the language and the filename
     :param name:
     :param language:
     """
-    path = Path(os.getcwd() + "\\ressources\\" + filename)
-    lines = []
-    if(verifyDirectory(filename)) :
-        with open(path, 'r') as file:
-            for line in file:
-                lines.append(line.strip())
-    return lines
+    chemin_access = Path(os.getcwd() + "\\ressources\\" + fichier)
+    lignes = []
+    if isDossierExiste(fichier) :
+        with open(chemin_access, 'r') as file:
+            for ligne in file:
+                lignes.append(ligne.strip())
+    return lignes
 
 
-def adaptText(word):
+def adaptationDuTexte(phrase):
     """
     Remove unnecessary characters : [',' , '.']
     @:param word
     @:return String
     """
-    word = word.lower()
-    if word.__contains__(','):
-        word = word.replace(',', '')
-    if word.__contains__('.'):
-        word = word.replace('.', '')
-    return word
+    phrase = phrase.lower()
+    if phrase.__contains__(','):
+        phrase = phrase.replace(',', '')
+    if phrase.__contains__('.'):
+        phrase = phrase.replace('.', '')
+    return phrase
 
 
-def searchWordInListRegex(word, array):
+def searchWordInListRegex(mot, liste):
     """
     Search if a word is in a array
-    :param word:
-    :param array:
+    :param mot:
+    :param liste:
     :return: boolean
     """
-    word = word.replace('\n', '')
-    combined = "(" + ")|(".join(array) + ")"
-    if re.search(combined, word.lower()):
+    mot = mot.replace('\n', '')
+    combined = "(" + ")|(".join(liste) + ")"
+    if re.search(combined, mot.lower()):
         return True
     return False
 
 
 def regexActionAndObjet():
-    wordArray = []
-    categoryArray = []
-    for word in FileIntoList("objet"):
-        if word:
-            wordArray.append(word.split(" @@ ")[0])
-            categoryArray.append(word.split(" @@ ")[1])
-    return wordArray, categoryArray
+    liste_objet = []
+    liste_action = []
+    for mot in FichierAListe("objet"):
+        if mot:
+            liste_objet.append(mot.split(" @@ ")[0])
+            liste_action.append(mot.split(" @@ ")[1])
+    return liste_objet, liste_action
 
 
-def findWord(mot, phrase) :
+def trouverUnMot(mot, phrase) :
     if re.search(r'\b' + mot + r'\b', phrase):
         #print(f'Le mot "{mot}" a été trouvé dans la phrase.')
         return True
@@ -79,17 +81,25 @@ def findWord(mot, phrase) :
         #print(f'Le mot "{mot}" n\'a pas été trouvé dans la phrase.')
         return False
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print(adaptText(text))
-    wordArray, categoryArray = regexActionAndObjet()
+@app.route('/api/tal', methods=['GET'])
+def tal():
+    listeDesActions.clear()
+    texte = request.args.get('requete')
+    print(adaptationDuTexte(texte))
+    liste_objets, liste_actions = regexActionAndObjet()
     compteur = 0
-    for word in wordArray:
-        #print(word)
-        if findWord(word, adaptText(text)):
-            #print(categoryArray[compteur])
-            listOfAction.append(categoryArray[compteur])
+    for mot in liste_objets:
+        # print(mot)
+        if trouverUnMot(mot, adaptationDuTexte(texte)):
+            # print(liste_actions[compteur])
+            listeDesActions.append(liste_actions[compteur])
         compteur += 1
 
-    for category in listOfAction:
-        print(category)
+    #for category in listOfAction:
+    #    print(category)
+    return jsonify({'Action': listeDesActions})
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
