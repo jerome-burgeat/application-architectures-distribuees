@@ -1,0 +1,3 @@
+(jou(e|er|es|ent)|allume|ouvre) @@ JOUER
+(diminu(e|er|es|ent)|baisse|eteindre) @@ DIMINUER
+(augment(e|er|es|ent)|monte) @@ AUGMENTER
