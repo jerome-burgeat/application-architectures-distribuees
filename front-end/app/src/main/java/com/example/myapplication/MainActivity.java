@@ -239,18 +239,19 @@ public class MainActivity extends AppCompatActivity  {
                         postBodyAudio = new MultipartBody.Builder()
                                 .setType(MultipartBody.FORM)
                                 .addFormDataPart("audio", "final_record.wav",
-                                        RequestBody.create(FileUtils.readFileToByteArray(fileaudio), MediaType.parse("audio/*wav")))
+                                        RequestBody.create(FileUtils.readFileToByteArray(fileaudio), MediaType.parse("audio/wav")))
                                 .build();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                     okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5000/api/asr").post(postBodyAudio).build();
+
                     okHttpClient.newCall(request).enqueue(new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
                             runOnUiThread(new Runnable() {
                                 public void run() {
-                                    Toast.makeText(MainActivity.this, "Impossible de se connecter au serveur", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -262,8 +263,11 @@ public class MainActivity extends AppCompatActivity  {
                                 public void run() {
                                     try {
                                         //addMessageToChat("Bot: " + response.peekBody(2048).string(), color, alignement);
-                                        System.out.println(response.peekBody(2048).string());
-                                        addMessageToChat("Bot: "  + response.peekBody(2048).string(), Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                                        String message = response.peekBody(2048).string().replace("\"", "");
+                                        System.out.println(message);
+                                        addMessageToChat("User: " + message, Color.WHITE, View.TEXT_ALIGNMENT_TEXT_END);
+                                        addBotResponseToChat("Bot: " + message, Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                                        //addMessageToChat("Bot: "  + response.peekBody(2048).string(), Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                                     } catch (IOException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -533,7 +537,7 @@ public class MainActivity extends AppCompatActivity  {
         String url = "http://192.168.1.11:5000/api/tal?requete=" + URLEncoder.encode(message, "UTF-8");
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.32:5000/api/tal?requete="+message).build();
+        okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5001/api/tal?requete="+message).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {

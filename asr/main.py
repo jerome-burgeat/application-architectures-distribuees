@@ -15,7 +15,7 @@ authentification = SpeakerRecognition.from_hparams(source="speechbrain/spkrec-ec
 authentifier = glob.glob("/\\voixAutorise\\*.wav")
 
 
-@app.route('/api/asr', methods=['GET','POST'])
+@app.route('/api/asr', methods=['POST'])
 def asr():
     decoderVoix = EncoderDecoderASR.from_hparams(source="speechbrain/asr-crdnn-commonvoice-fr",
                                                  savedir="pretrained_models/asr-crdnn-commonvoice-fr")
@@ -24,8 +24,9 @@ def asr():
         f = request.files['audio']
         filePath = os.getcwd() + "\\voixAutorise\\final_record.wav"
         f.save(filePath)
-        print(decoderVoix.transcribe_file(os.getcwd() + "\\voixAutorise\\final_record.wav"))
-        return jsonify({'asr': decoderVoix.transcribe_file(os.getcwd() + "\\voixAutorise\\final_record.wav")})
+        result = decoderVoix.transcribe_file(os.getcwd() + "\\voixAutorise\\final_record.wav")
+        print(result)
+        return jsonify(result)
     return 'Aucun fichier audio n\'a été envoyé'
 
 
