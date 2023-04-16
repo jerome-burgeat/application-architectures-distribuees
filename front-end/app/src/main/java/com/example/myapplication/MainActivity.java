@@ -1,8 +1,14 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
+import android.os.Environment;
+import android.os.Handler;
 import android.util.TypedValue;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,22 +27,22 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
+import okhttp3.*;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.Exception;
 import java.net.URLEncoder;
+import java.security.Permission;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -61,8 +67,24 @@ public class MainActivity extends AppCompatActivity  {
 
     private EditText mUserInput;
     LinearLayout mUserInputHistory;
-    private Button mSendButton;
+    private Button mSendButton, mTalkButton;
 
+    private MediaRecorder mediaRecorder;
+    private boolean isRecording = false;
+    private String filePath, outputFile;
+
+    private Handler handler;
+
+
+    String tempRawFile = "temp_record.raw";
+    String tempWavFile = "final_record.wav";
+    final int bpp = 16;
+    int sampleRate = 44100;
+    int channel = AudioFormat.CHANNEL_IN_STEREO;
+    int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
+    AudioRecord recorder = null;
+    int bufferSize = 0;
+    Thread recordingThread;
 
     String splitStr(String str){
         String[] segments = str.split("/");
@@ -149,8 +171,184 @@ public class MainActivity extends AppCompatActivity  {
         mUserInput = findViewById(R.id.userInput);
         mUserInputHistory = findViewById(R.id.userInputHistory);
         mSendButton = findViewById(R.id.sendButton);
+        mTalkButton = findViewById(R.id.button_talk);
 
         musicTitle.setSelected(true);
+
+        mTalkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bufferSize = AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+
+//                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+//                }
+//
+//                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 0);
+//                }
+//
+//                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
+//                }
+
+                //startRecording();
+                File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toURI());
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                File file22 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "tmp.wav");
+                try {
+                    file22.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
+                }
+                // Initialisez le nom de fichier de sortie
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                String timestamp = dateFormat.format(new Date());
+                filePath = dir.getAbsolutePath();
+                System.out.println(filePath);
+                if (!isRecording) {
+                    // Commencer l'enregistrement
+                    isRecording = true;
+                    //mTalkButton.setText("Arrêter l'enregistrement");
+                    Toast.makeText(MainActivity.this, "Appuyer pour arrêter l'enregistrement", Toast.LENGTH_LONG).show();
+                    if(checkWritePermission()) {
+                        startRecording();
+                    }
+                    if(!checkWritePermission()){
+                        requestWritePermission();
+                    }
+                } else {
+                    // Arrêter l'enregistrement
+                    isRecording = false;
+                    //mTalkButton.setText("Commencer l'enregistrement");
+                    Toast.makeText(MainActivity.this, "L'enregistrement est fini", Toast.LENGTH_LONG).show();
+                    stopRecording();
+
+                    OkHttpClient okHttpClient = new OkHttpClient();
+                    File fileaudio = new File(dir.getAbsolutePath() + "/final_record.wav");
+
+                    RequestBody postBodyAudio = null;
+                    try {
+                        postBodyAudio = new MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart("audio", "final_record.wav",
+                                        RequestBody.create(FileUtils.readFileToByteArray(fileaudio), MediaType.parse("audio/*wav")))
+                                .build();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5000/api/asr").post(postBodyAudio).build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, "Impossible de se connecter au serveur", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        //addMessageToChat("Bot: " + response.peekBody(2048).string(), color, alignement);
+                                        System.out.println(response.peekBody(2048).string());
+                                        addMessageToChat("Bot: "  + response.peekBody(2048).string(), Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                //stopRecording();
+                /*OkHttpClient client = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
+                MultipartBody.Builder mMultipartBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
+                mMultipartBody.addFormDataPart("file","upload",new CountingFileRequestBody(new File(path),"*", null));
+
+
+                RequestBody mRequestBody = mMultipartBody.build();
+                Request request = new Request.Builder()
+                        .url("yourUrl/uploadfile").post(mRequestBody)
+                        .build();
+
+                Response response = null;
+                try {
+                    response = client.newCall(request).execute();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                try {
+                    String responseString = response.body().string();
+                    System.out.println(responseString);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }*/
+
+                /*OkHttpClient okHttpClient = new OkHttpClient();
+                okhttp3.Request request = new okhttp3.Request.Builder().url(url+message).build();*/
+
+                /*OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("audio/wav");
+                RequestBody requestBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("audio", "tmp.wav",
+                                RequestBody.create(mediaType, file))
+                        .build();
+                okhttp3.Request request = new okhttp3.Request.Builder()
+                        .url(url)
+                        .post(requestBody)
+                        .build();*/
+                /*client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Impossible de se connecter au serveur", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    //addMessageToChat("Bot: " + response.peekBody(2048).string(), color, alignement);
+                                    JSONObject jObject = new JSONObject(response.peekBody(2048).string());
+                                    String aJsonString = jObject.getString("asr");
+                                    String[] arr = null;
+                                    arr = aJsonString.split(",");
+                                    for (int i = 0; i < arr.length; i++) {
+                                        arr[i] = adapterReponse(arr[i]);
+                                        System.out.println(arr[i]);
+                                        //addMessageToChat("Bot: " + arr[i], Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                                    }
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
+                    }
+                });*/
+            }
+        });
+
 
         buttonSpeech.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -335,7 +533,7 @@ public class MainActivity extends AppCompatActivity  {
         String url = "http://192.168.1.11:5000/api/tal?requete=" + URLEncoder.encode(message, "UTF-8");
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5000/api/tal?requete="+message).build();
+        okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.32:5000/api/tal?requete="+message).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -415,6 +613,160 @@ public class MainActivity extends AppCompatActivity  {
         if (mot.contains("]"))
             mot = mot.replace("]", "");
         return mot;
+    }
+
+    private String getPath(String name){
+        try {
+            return filePath + "/" + name;
+        }
+        catch (Exception e){
+            return null;
+        }
+    }
+
+    private void writeRawData(){
+        try{
+            if(filePath != null) {
+                byte[] data = new byte[bufferSize];
+                String path = getPath(tempRawFile);
+                FileOutputStream fileOutputStream = new FileOutputStream(path);
+                if(fileOutputStream != null){
+                    int read;
+                    while (isRecording){
+                        read = recorder.read(data, 0, bufferSize);
+                        if (AudioRecord.ERROR_INVALID_OPERATION != read) {
+                            try {
+                                fileOutputStream.write(data);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                fileOutputStream.close();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void wavHeader(FileOutputStream fileOutputStream,long totalAudioLen,long totalDataLen,int channels,long byteRate){
+        try {
+            byte[] header = new byte[44];
+            header[0] = 'R'; // RIFF/WAVE header
+            header[1] = 'I';
+            header[2] = 'F';
+            header[3] = 'F';
+            header[4] = (byte) (totalDataLen & 0xff);
+            header[5] = (byte) ((totalDataLen >> 8) & 0xff);
+            header[6] = (byte) ((totalDataLen >> 16) & 0xff);
+            header[7] = (byte) ((totalDataLen >> 24) & 0xff);
+            header[8] = 'W';
+            header[9] = 'A';
+            header[10] = 'V';
+            header[11] = 'E';
+            header[12] = 'f'; // 'fmt ' chunk
+            header[13] = 'm';
+            header[14] = 't';
+            header[15] = ' ';
+            header[16] = 16; // 4 bytes: size of 'fmt ' chunk
+            header[17] = 0;
+            header[18] = 0;
+            header[19] = 0;
+            header[20] = 1; // format = 1
+            header[21] = 0;
+            header[22] = (byte) channels;
+            header[23] = 0;
+            header[24] = (byte) ((long) sampleRate & 0xff);
+            header[25] = (byte) (((long) sampleRate >> 8) & 0xff);
+            header[26] = (byte) (((long) sampleRate >> 16) & 0xff);
+            header[27] = (byte) (((long) sampleRate >> 24) & 0xff);
+            header[28] = (byte) (byteRate & 0xff);
+            header[29] = (byte) ((byteRate >> 8) & 0xff);
+            header[30] = (byte) ((byteRate >> 16) & 0xff);
+            header[31] = (byte) ((byteRate >> 24) & 0xff);
+            header[32] = (byte) (2 * 16 / 8); // block align
+            header[33] = 0;
+            header[34] = bpp; // bits per sample
+            header[35] = 0;
+            header[36] = 'd';
+            header[37] = 'a';
+            header[38] = 't';
+            header[39] = 'a';
+            header[40] = (byte) (totalAudioLen & 0xff);
+            header[41] = (byte) ((totalAudioLen >> 8) & 0xff);
+            header[42] = (byte) ((totalAudioLen >> 16) & 0xff);
+            header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
+            fileOutputStream.write(header, 0, 44);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void createWavFile(String tempPath,String wavPath){
+        try {
+            FileInputStream fileInputStream = new FileInputStream(tempPath);
+            FileOutputStream fileOutputStream = new FileOutputStream(wavPath);
+            byte[] data = new byte[bufferSize];
+            int channels = 2;
+            long byteRate = bpp * sampleRate * channels / 8;
+            long totalAudioLen = fileInputStream.getChannel().size();
+            long totalDataLen = totalAudioLen + 36;
+            wavHeader(fileOutputStream,totalAudioLen,totalDataLen,channels,byteRate);
+            while (fileInputStream.read(data) != -1) {
+                fileOutputStream.write(data);
+            }
+            fileInputStream.close();
+            fileOutputStream.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void startRecording(){
+        try{
+            if(checkWritePermission()) {
+                recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channel, audioEncoding, bufferSize);
+            }
+            int status = recorder.getState();
+            if(status == 1){
+                recorder.startRecording();
+                isRecording = true;
+            }
+            recordingThread = new Thread(this::writeRawData);
+            recordingThread.start();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void stopRecording(){
+        try{
+            if(recorder != null) {
+                isRecording = false;
+                int status = recorder.getState();
+                if (status == 1) {
+                    recorder.stop();
+                }
+                recorder.release();
+                recordingThread = null;
+                createWavFile(getPath(tempRawFile),getPath(tempWavFile));
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private boolean checkWritePermission() {
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+        return result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED ;
+    }
+    private void requestWritePermission() {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO,Manifest.permission.MODIFY_AUDIO_SETTINGS,Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
     }
 
 }
