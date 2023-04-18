@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity  {
 
         try
         {
-            //communicator = com.zeroc.Ice.Util.initialize();
+            communicator = com.zeroc.Ice.Util.initialize();
             /**
              * ipv4 -> le réseau que tu utilise (se trouve en tapand 'ipconfig' sur terminal de pc qui tourne serveur)
              * le réseau utilisé de téléphonne qui tourne application doit être sous le même réseau que celui de serveur
@@ -179,20 +179,6 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 bufferSize = AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-
-//                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-//                }
-//
-//                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 0);
-//                }
-//
-//                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-//                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
-//                }
-
-                //startRecording();
                 File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toURI());
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -204,13 +190,7 @@ public class MainActivity extends AppCompatActivity  {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0);
-                }
                 // Initialisez le nom de fichier de sortie
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                String timestamp = dateFormat.format(new Date());
                 filePath = dir.getAbsolutePath();
                 System.out.println(filePath);
                 if (!isRecording) {
@@ -276,80 +256,6 @@ public class MainActivity extends AppCompatActivity  {
                         }
                     });
                 }
-
-                //stopRecording();
-                /*OkHttpClient client = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build();
-                MultipartBody.Builder mMultipartBody = new MultipartBody.Builder().setType(MultipartBody.FORM);
-                mMultipartBody.addFormDataPart("file","upload",new CountingFileRequestBody(new File(path),"*", null));
-
-
-                RequestBody mRequestBody = mMultipartBody.build();
-                Request request = new Request.Builder()
-                        .url("yourUrl/uploadfile").post(mRequestBody)
-                        .build();
-
-                Response response = null;
-                try {
-                    response = client.newCall(request).execute();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    String responseString = response.body().string();
-                    System.out.println(responseString);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }*/
-
-                /*OkHttpClient okHttpClient = new OkHttpClient();
-                okhttp3.Request request = new okhttp3.Request.Builder().url(url+message).build();*/
-
-                /*OkHttpClient client = new OkHttpClient();
-                MediaType mediaType = MediaType.parse("audio/wav");
-                RequestBody requestBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("audio", "tmp.wav",
-                                RequestBody.create(mediaType, file))
-                        .build();
-                okhttp3.Request request = new okhttp3.Request.Builder()
-                        .url(url)
-                        .post(requestBody)
-                        .build();*/
-                /*client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(MainActivity.this, "Impossible de se connecter au serveur", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    //addMessageToChat("Bot: " + response.peekBody(2048).string(), color, alignement);
-                                    JSONObject jObject = new JSONObject(response.peekBody(2048).string());
-                                    String aJsonString = jObject.getString("asr");
-                                    String[] arr = null;
-                                    arr = aJsonString.split(",");
-                                    for (int i = 0; i < arr.length; i++) {
-                                        arr[i] = adapterReponse(arr[i]);
-                                        System.out.println(arr[i]);
-                                        //addMessageToChat("Bot: " + arr[i], Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
-                                    }
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                } catch (JSONException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        });
-                    }
-                });*/
             }
         });
 
@@ -766,8 +672,9 @@ public class MainActivity extends AppCompatActivity  {
 
     private boolean checkWritePermission() {
         int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
-        return result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED ;
+        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+        int result3 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO);
+        return result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED;
     }
     private void requestWritePermission() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO,Manifest.permission.MODIFY_AUDIO_SETTINGS,Manifest.permission.WRITE_EXTERNAL_STORAGE},1);

@@ -31,17 +31,4 @@ def asr():
 
 
 if __name__ == '__main__':
-    #decoderVoix = EncoderDecoderASR.from_hparams(source="speechbrain/asr-crdnn-commonvoice-fr",
-    #                                             savedir="pretrained_models/asr-crdnn-commonvoice-fr")
-    #print(decoderVoix.transcribe_file(os.getcwd() + "\\voixAutorise\\final_record.wav"))
     app.run(host='0.0.0.0')
-
-# auth = False
-# for x in authentifier :
-#    score, prediction = authentification.verify_files("C:\\Users\\burge\\PycharmProjects\\asr\\new_audio.wav", x)
-#    if(prediction):
-#        auth = True
-#        decoderVoix.transcribe_file("C:\\Users\\burge\\PycharmProjects\\asr\\new_audio.wav")
-#        print(decoderVoix.transcribe_file("C:\\Users\\burge\\PycharmProjects\\asr\\voixAutorise\\testJerome.wav"))
-#        print(auth, x)
-#        break
