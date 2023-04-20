@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -38,9 +39,14 @@ import java.lang.Exception;
 import java.net.URLEncoder;
 import java.security.Permission;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
 
 import static android.os.Environment.getExternalStorageDirectory;
 
@@ -66,12 +72,17 @@ public class MainActivity extends AppCompatActivity  {
 
     private AudioManager audio;
 
+    private LibVLC libVLC;
+    private MediaPlayer mediaPlayer;
+
 
     ImageView musicImage;
     TextView musicTitle, musicTimePass, musicTimeRest;
     SeekBar musicSeekBar;
     Button buttonPlay, buttonPrevious, buttonNext, buttonSpeech;
     File fileMusic;
+
+    private boolean isPlayed = false;
 
     private EditText mUserInput;
     LinearLayout mUserInputHistory;
@@ -146,6 +157,14 @@ public class MainActivity extends AppCompatActivity  {
 
         Objects.requireNonNull(getSupportActionBar()).hide();
 
+        // 初始化 VLC
+        ArrayList<String> options = new ArrayList<>();
+        libVLC = new LibVLC(this, options);
+        mediaPlayer = new MediaPlayer(libVLC);
+
+        Media media = new Media(libVLC, Uri.parse("rtsp://" + ipv4 + "/"));
+        mediaPlayer.setMedia(media);
+
         try
         {
             communicator = com.zeroc.Ice.Util.initialize();
@@ -171,12 +190,38 @@ public class MainActivity extends AppCompatActivity  {
         buttonNext = findViewById(R.id.button_next);
         buttonSpeech = findViewById(R.id.button_speech);
 
+        Drawable icon_play = getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24);
+        Drawable icon_pause = getResources().getDrawable(R.drawable.ic_pause_foreground);
+
         mUserInput = findViewById(R.id.userInput);
         mUserInputHistory = findViewById(R.id.userInputHistory);
         mSendButton = findViewById(R.id.sendButton);
         mTalkButton = findViewById(R.id.button_talk);
 
         musicTitle.setSelected(true);
+
+        buttonPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isPlayed){
+                    Boolean pause = app.pauseMusic();
+                    if(pause){
+                        buttonPlay.setBackgroundDrawable(icon_play);
+                        mediaPlayer.pause();
+                    }
+                    isPlayed = false;
+                }else{
+                    Boolean play = app.playMusic("银河飞车");
+                    if(play){
+                        buttonPlay.setBackgroundDrawable(icon_pause);
+                        mediaPlayer.play();
+                    }else{
+                        System.out.println("No music! ");
+                    }
+                    isPlayed = true;
+                }
+            }
+        });
 
         mTalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -308,6 +353,23 @@ public class MainActivity extends AppCompatActivity  {
                             }
                         }
                     }
+
+//                if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+//                    System.out.println("has multiple files");
+//                    System.out.println(intent.getClipData().getItemCount());
+////                    for
+//                    if (type.startsWith("image/")) {
+//                        // treat image file
+//                        handleImage(intent);
+//                    } else if (type.startsWith("audio/")) {
+//                        // treat audio file
+//                        try {
+//                            handleAudio(intent);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
 
                 if (fileMusic != null) {
                     if (fileMusic.exists()) { // 判断文件是否存在

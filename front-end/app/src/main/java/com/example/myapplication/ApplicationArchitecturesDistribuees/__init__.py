@@ -6,6 +6,5 @@ Ice.updateModule("ApplicationArchitecturesDistribuees")
 
 # Modules:
 import server_ice
-import server_ice
 
 # Submodules:
