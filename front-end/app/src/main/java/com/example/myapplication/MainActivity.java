@@ -56,6 +56,14 @@ public class MainActivity extends AppCompatActivity  {
 
 //    private static final int REQUEST_WRITE_STORAGE = 112;
 
+    /**
+     * ipv4 -> le réseau que tu utilise (se trouve en tapand 'ipconfig' sur terminal de pc qui tourne serveur)
+     * le réseau utilisé de téléphonne qui tourne application doit être sous le même réseau que celui de serveur
+     * spécifique pour emulator : 10.0.2.2
+     * normalent pour CERI: 10.120.25.149
+     */
+    String ipv4 = "192.168.1.128";
+
     private AudioManager audio;
 
 
@@ -131,6 +139,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         audio = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
 
@@ -140,13 +149,7 @@ public class MainActivity extends AppCompatActivity  {
         try
         {
             communicator = com.zeroc.Ice.Util.initialize();
-            /**
-             * ipv4 -> le réseau que tu utilise (se trouve en tapand 'ipconfig' sur terminal de pc qui tourne serveur)
-             * le réseau utilisé de téléphonne qui tourne application doit être sous le même réseau que celui de serveur
-             * spécifique pour emulator : 10.0.2.2
-             * normalent pour CERI: 10.120.25.149
-             */
-            String ipv4 = "10.0.2.2";
+
             com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h " + ipv4 + " -p 10000");
             app = ApplicationArchitecturesDistribuees.ServerPrx.checkedCast(base);
             System.out.println("hello world! ");
@@ -224,7 +227,7 @@ public class MainActivity extends AppCompatActivity  {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5000/api/asr").post(postBodyAudio).build();
+                    okhttp3.Request request = new okhttp3.Request.Builder().url("http://" + ipv4 + ":5000/api/asr").post(postBodyAudio).build();
 
                     okHttpClient.newCall(request).enqueue(new Callback() {
                         @Override
@@ -440,10 +443,10 @@ public class MainActivity extends AppCompatActivity  {
 
     public void addBotResponseToChat(String message, int color, int alignement) throws IOException {
         // Définir l'URL de l'API Flask avec l'argument "tal" en tant que chaîne de caractères
-        String url = "http://192.168.1.11:5000/api/tal?requete=" + URLEncoder.encode(message, "UTF-8");
+        String url = "http://" + ipv4 +":5000/api/tal?requete=" + URLEncoder.encode(message, "UTF-8");
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5001/api/tal?requete="+message).build();
+        okhttp3.Request request = new okhttp3.Request.Builder().url("http://" + ipv4 + ":5001/api/tal?requete="+message).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
