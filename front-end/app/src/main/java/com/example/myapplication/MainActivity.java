@@ -9,6 +9,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.util.TypedValue;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -86,6 +87,10 @@ public class MainActivity extends AppCompatActivity  {
     int bufferSize = 0;
     Thread recordingThread;
 
+    //String ipv4 = "10.0.2.2";
+    String ipv4 = "192.168.1.11";
+    String flask = "http://192.168.1.11";
+
     String splitStr(String str){
         String[] segments = str.split("/");
         String rslt = segments[segments.length - 1];
@@ -146,7 +151,6 @@ public class MainActivity extends AppCompatActivity  {
              * spécifique pour emulator : 10.0.2.2
              * normalent pour CERI: 10.120.25.149
              */
-            String ipv4 = "10.0.2.2";
             com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h " + ipv4 + " -p 10000");
             app = ApplicationArchitecturesDistribuees.ServerPrx.checkedCast(base);
             System.out.println("hello world! ");
@@ -175,6 +179,10 @@ public class MainActivity extends AppCompatActivity  {
 
         musicTitle.setSelected(true);
 
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
+
         mTalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -184,35 +192,36 @@ public class MainActivity extends AppCompatActivity  {
                     dir.mkdirs();
                 }
 
-                File file22 = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "tmp.wav");
+                File fileaudioRaw = new File(dir.getAbsolutePath() + "/temp_record.raw");
+                File fileaudio = new File(dir.getAbsolutePath() + "/final_record.wav");
                 try {
-                    file22.createNewFile();
+                    if (!fileaudioRaw.exists()) {
+                        fileaudioRaw.createNewFile();
+                    }
+                    if (!fileaudio.exists()) {
+                        fileaudio.createNewFile();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 // Initialisez le nom de fichier de sortie
                 filePath = dir.getAbsolutePath();
-                System.out.println(filePath);
                 if (!isRecording) {
                     // Commencer l'enregistrement
-                    isRecording = true;
                     //mTalkButton.setText("Arrêter l'enregistrement");
                     Toast.makeText(MainActivity.this, "Appuyer pour arrêter l'enregistrement", Toast.LENGTH_LONG).show();
-                    if(checkWritePermission()) {
-                        startRecording();
-                    }
+                    startRecording();
                     if(!checkWritePermission()){
                         requestWritePermission();
                     }
                 } else {
                     // Arrêter l'enregistrement
-                    isRecording = false;
                     //mTalkButton.setText("Commencer l'enregistrement");
                     Toast.makeText(MainActivity.this, "L'enregistrement est fini", Toast.LENGTH_LONG).show();
                     stopRecording();
 
                     OkHttpClient okHttpClient = new OkHttpClient();
-                    File fileaudio = new File(dir.getAbsolutePath() + "/final_record.wav");
+                    //File fileaudio = new File(dir.getAbsolutePath() + "/final_record.wav");
 
                     RequestBody postBodyAudio = null;
                     try {
@@ -224,7 +233,7 @@ public class MainActivity extends AppCompatActivity  {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                    okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5000/api/asr").post(postBodyAudio).build();
+                    okhttp3.Request request = new okhttp3.Request.Builder().url(flask + ":5000/api/asr").post(postBodyAudio).build();
 
                     okHttpClient.newCall(request).enqueue(new Callback() {
                         @Override
@@ -439,11 +448,8 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void addBotResponseToChat(String message, int color, int alignement) throws IOException {
-        // Définir l'URL de l'API Flask avec l'argument "tal" en tant que chaîne de caractères
-        String url = "http://192.168.1.11:5000/api/tal?requete=" + URLEncoder.encode(message, "UTF-8");
-
         OkHttpClient okHttpClient = new OkHttpClient();
-        okhttp3.Request request = new okhttp3.Request.Builder().url("http://192.168.1.11:5001/api/tal?requete="+message).build();
+        okhttp3.Request request = new okhttp3.Request.Builder().url(flask + ":5001/api/tal?requete="+message).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -492,6 +498,12 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "PAUSE":
                 addMessageToChat("Bot: La musique en pause", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                break;
+            case "SUIVANT":
+                addMessageToChat("Bot: Je lance la musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                break;
+            case "PRECEDENT":
+                addMessageToChat("Bot: Je remets la musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                 break;
             case "AUGMENTER":
                 addMessageToChat("Bot: Le son est augmenté", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
@@ -637,9 +649,10 @@ public class MainActivity extends AppCompatActivity  {
     }
     public void startRecording(){
         try{
-            if(checkWritePermission()) {
-                recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channel, audioEncoding, bufferSize);
+            if(!checkWritePermission()) {
+                requestWritePermission();
             }
+            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channel, audioEncoding, bufferSize);
             int status = recorder.getState();
             if(status == 1){
                 recorder.startRecording();
