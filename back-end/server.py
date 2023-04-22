@@ -3,6 +3,7 @@ import sys, Ice
 import ApplicationArchitecturesDistribuees
 import pymongo
 import json
+import vlc
 from mutagen.mp3 import MP3
  
 class Server(ApplicationArchitecturesDistribuees.Server):
@@ -12,8 +13,11 @@ class Server(ApplicationArchitecturesDistribuees.Server):
     collection = db["musics"]
     
     def __init__(self):
+        self.ipv4 = "192.168.1.128"
         self.index = 0
         self.uploadingFiles = {}
+        self.player = vlc.Instance()
+        self.media_player = self.player.media_player_new()
 
     def helloWorld(self, helloWorld, current=None):
         print(helloWorld)
@@ -41,7 +45,8 @@ class Server(ApplicationArchitecturesDistribuees.Server):
         album = audio['TALB'].text[0] if 'TALB' in audio else None
         print("file infos: " , title, album, artist)
         print("upload file successfuly! ")
-        musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "url": ' + '"musics/' + filename + '"}'
+        # musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "url": ' + '"musics/' + filename + '"}'
+        musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "filename": "' + filename + '", "url": ' + '"E://Yingqi/etudes/M1S2/application-architectures-distribuees/back-end/musics/' + filename + '"}'
         dataToInsert = json.loads(musicData)
         result = self.collection.insert_one(dataToInsert)
         # print("result: " + result)
@@ -56,6 +61,53 @@ class Server(ApplicationArchitecturesDistribuees.Server):
 
     def updateMusicChangeTitle(self, titleCurrent:str, newTitle:str, current=None):
         result = self.collection.update_one({"title": titleCurrent}, {"$set": {"title": newTitle}})
+
+    def playMusic(self, musicTitle, current=None):
+        print("get request ! ")
+        # if(self.media_player.is_playing()):
+        #     print("music playing....")
+        #     self.media_player.play()
+        #     return True
+        if(self.media_player.get_state() == vlc.State.Paused):
+            print("music playing....")
+            self.media_player.play()
+            return True
+        else:
+            print("not music playing....")
+            filter = {'title': musicTitle}  # 替换为你的查询条件，如字段名和字段值
+
+            document = self.collection.find_one(filter)
+            filename = document['filename']
+
+            file = "musics/" + filename
+            if os.path.exists(file) != True : return False
+            media = self.player.media_new(file)
+
+            media.add_option(":sout=#transcode{vcodec=h264,acodec=mpga,ab=128,channels=2,samplerate=44100,scodec=none}:rtp{sdp=rtsp://" + self.ipv4 + "/}")
+            media.add_option("--no-sout-all")
+            media.add_option("--sout-keep")
+            media.get_mrl()
+
+            self.media_player = self.player.media_player_new()
+            self.media_player.set_media(media)
+            self.media_player.play()
+            return True
+
+    def stopMusic(self, current=None):
+        if (self.media_player.is_playing()):
+            self.media_player.stop()
+            return True
+        else: 
+            return False
+
+    def pauseMusic(self, current=None):
+        if(self.media_player.is_playing()):
+            print("is playing...")
+            self.media_player.pause()
+            return True
+        else:
+            print("not music playing...")
+            return False
  
 with Ice.initialize(sys.argv) as communicator:
     adapter = communicator.createObjectAdapterWithEndpoints("ApplicationArchitecturesDistribuees", "default -p 10000")

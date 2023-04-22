@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
@@ -39,9 +40,14 @@ import java.lang.Exception;
 import java.net.URLEncoder;
 import java.security.Permission;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import org.videolan.libvlc.LibVLC;
+import org.videolan.libvlc.Media;
+import org.videolan.libvlc.MediaPlayer;
 
 import static android.os.Environment.getExternalStorageDirectory;
 
@@ -57,7 +63,17 @@ public class MainActivity extends AppCompatActivity  {
 
 //    private static final int REQUEST_WRITE_STORAGE = 112;
 
+    /**
+     * ipv4 -> le réseau que tu utilise (se trouve en tapand 'ipconfig' sur terminal de pc qui tourne serveur)
+     * le réseau utilisé de téléphonne qui tourne application doit être sous le même réseau que celui de serveur
+     * spécifique pour emulator : 10.0.2.2
+     * normalent pour CERI: 10.120.25.149
+     */
+
     private AudioManager audio;
+
+    private LibVLC libVLC;
+    private MediaPlayer mediaPlayer;
 
 
     ImageView musicImage;
@@ -65,6 +81,8 @@ public class MainActivity extends AppCompatActivity  {
     SeekBar musicSeekBar;
     Button buttonPlay, buttonPrevious, buttonNext, buttonSpeech;
     File fileMusic;
+
+    private boolean isPlayed = false;
 
     private EditText mUserInput;
     LinearLayout mUserInputHistory;
@@ -136,21 +154,24 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         audio = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
 
 
         Objects.requireNonNull(getSupportActionBar()).hide();
 
+        // 初始化 VLC
+        ArrayList<String> options = new ArrayList<>();
+        libVLC = new LibVLC(this, options);
+        mediaPlayer = new MediaPlayer(libVLC);
+
+        Media media = new Media(libVLC, Uri.parse("rtsp://" + ipv4 + "/"));
+        mediaPlayer.setMedia(media);
+
         try
         {
             communicator = com.zeroc.Ice.Util.initialize();
-            /**
-             * ipv4 -> le réseau que tu utilise (se trouve en tapand 'ipconfig' sur terminal de pc qui tourne serveur)
-             * le réseau utilisé de téléphonne qui tourne application doit être sous le même réseau que celui de serveur
-             * spécifique pour emulator : 10.0.2.2
-             * normalent pour CERI: 10.120.25.149
-             */
             com.zeroc.Ice.ObjectPrx base = communicator.stringToProxy("ApplicationArchitecturesDistribuees:default -h " + ipv4 + " -p 10000");
             app = ApplicationArchitecturesDistribuees.ServerPrx.checkedCast(base);
             System.out.println("hello world! ");
@@ -172,17 +193,43 @@ public class MainActivity extends AppCompatActivity  {
         buttonNext = findViewById(R.id.button_next);
         buttonSpeech = findViewById(R.id.button_speech);
 
+        Drawable icon_play = getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24);
+        Drawable icon_pause = getResources().getDrawable(R.drawable.ic_pause_foreground);
+
         mUserInput = findViewById(R.id.userInput);
         mUserInputHistory = findViewById(R.id.userInputHistory);
         mSendButton = findViewById(R.id.sendButton);
         mTalkButton = findViewById(R.id.button_talk);
 
         musicTitle.setSelected(true);
-
+        
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 
         StrictMode.setThreadPolicy(policy);
 
+        buttonPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isPlayed){
+                    Boolean pause = app.pauseMusic();
+                    if(pause){
+                        buttonPlay.setBackgroundDrawable(icon_play);
+                        mediaPlayer.pause();
+                    }
+                    isPlayed = false;
+                }else{
+                    Boolean play = app.playMusic("银河飞车");
+                    if(play){
+                        buttonPlay.setBackgroundDrawable(icon_pause);
+                        mediaPlayer.play();
+                    }else{
+                        System.out.println("No music! ");
+                    }
+                    isPlayed = true;
+                }
+            }
+        });
+        
         mTalkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -208,7 +255,6 @@ public class MainActivity extends AppCompatActivity  {
                 filePath = dir.getAbsolutePath();
                 if (!isRecording) {
                     // Commencer l'enregistrement
-                    //mTalkButton.setText("Arrêter l'enregistrement");
                     Toast.makeText(MainActivity.this, "Appuyer pour arrêter l'enregistrement", Toast.LENGTH_LONG).show();
                     startRecording();
                     if(!checkWritePermission()){
@@ -216,12 +262,10 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 } else {
                     // Arrêter l'enregistrement
-                    //mTalkButton.setText("Commencer l'enregistrement");
                     Toast.makeText(MainActivity.this, "L'enregistrement est fini", Toast.LENGTH_LONG).show();
                     stopRecording();
 
                     OkHttpClient okHttpClient = new OkHttpClient();
-                    //File fileaudio = new File(dir.getAbsolutePath() + "/final_record.wav");
 
                     RequestBody postBodyAudio = null;
                     try {
@@ -233,8 +277,8 @@ public class MainActivity extends AppCompatActivity  {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
+                    
                     okhttp3.Request request = new okhttp3.Request.Builder().url(flask + ":5000/api/asr").post(postBodyAudio).build();
-
                     okHttpClient.newCall(request).enqueue(new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -251,12 +295,10 @@ public class MainActivity extends AppCompatActivity  {
                                 @Override
                                 public void run() {
                                     try {
-                                        //addMessageToChat("Bot: " + response.peekBody(2048).string(), color, alignement);
                                         String message = response.peekBody(2048).string().replace("\"", "");
                                         System.out.println(message);
                                         addMessageToChat("User: " + message, Color.WHITE, View.TEXT_ALIGNMENT_TEXT_END);
                                         addBotResponseToChat("Bot: " + message, Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
-                                        //addMessageToChat("Bot: "  + response.peekBody(2048).string(), Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                                     } catch (IOException e) {
                                         throw new RuntimeException(e);
                                     }
@@ -314,6 +356,23 @@ public class MainActivity extends AppCompatActivity  {
                             }
                         }
                     }
+
+//                if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {
+//                    System.out.println("has multiple files");
+//                    System.out.println(intent.getClipData().getItemCount());
+////                    for
+//                    if (type.startsWith("image/")) {
+//                        // treat image file
+//                        handleImage(intent);
+//                    } else if (type.startsWith("audio/")) {
+//                        // treat audio file
+//                        try {
+//                            handleAudio(intent);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
 
                 if (fileMusic != null) {
                     if (fileMusic.exists()) { // 判断文件是否存在
@@ -448,8 +507,11 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void addBotResponseToChat(String message, int color, int alignement) throws IOException {
+
+        // Définir l'URL de l'API Flask avec l'argument "tal" en tant que chaîne de caractères
         OkHttpClient okHttpClient = new OkHttpClient();
         okhttp3.Request request = new okhttp3.Request.Builder().url(flask + ":5001/api/tal?requete="+message).build();
+
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {

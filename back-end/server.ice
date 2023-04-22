@@ -12,5 +12,8 @@ module ApplicationArchitecturesDistribuees
         void deleteMusic(string titleMusic);
         void searchMusic(string titleMusic);
         void updateMusicChangeTitle(string titleCurrent, string newTitle);
+        bool playMusic(string filename);
+        bool stopMusic();
+        bool pauseMusic();
     }
 }
