@@ -8,19 +8,20 @@
                                                    tools:context=".MainActivity">
 
     <Button
-            android:id="@+id/button_speech"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginBottom="252dp"
-            android:background="@drawable/button_speech"
-            android:contentDescription="@string/app_name"
-            android:elevation="50dp"
-            android:text=""
-            app:backgroundTint="@null"
-            app:cornerRadius="230dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.656"/>
+        android:id="@+id/button_speech"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="252dp"
+        android:background="@drawable/ic_smile_foreground"
+        android:contentDescription="@string/app_name"
+        android:elevation="50dp"
+        android:text=""
+        app:backgroundTint="@null"
+        app:cornerRadius="230dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.656"
+        app:layout_constraintStart_toStartOf="parent" />
     <Button
             android:id="@+id/button_talk"
             android:layout_width="70dp"

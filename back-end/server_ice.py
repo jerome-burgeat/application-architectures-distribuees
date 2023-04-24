@@ -95,17 +95,17 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def end_deleteMusic(self, _r):
             return _M_ApplicationArchitecturesDistribuees.Server._op_deleteMusic.end(self, _r)
 
-        def searchMusic(self, titleMusic, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.invoke(self, ((titleMusic, ), context))
+        def searchClosestMusic(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchClosestMusic.invoke(self, ((titleMusic, ), context))
 
-        def searchMusicAsync(self, titleMusic, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.invokeAsync(self, ((titleMusic, ), context))
+        def searchClosestMusicAsync(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchClosestMusic.invokeAsync(self, ((titleMusic, ), context))
 
-        def begin_searchMusic(self, titleMusic, _response=None, _ex=None, _sent=None, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.begin(self, ((titleMusic, ), _response, _ex, _sent, context))
+        def begin_searchClosestMusic(self, titleMusic, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchClosestMusic.begin(self, ((titleMusic, ), _response, _ex, _sent, context))
 
-        def end_searchMusic(self, _r):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_searchMusic.end(self, _r)
+        def end_searchClosestMusic(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_searchClosestMusic.end(self, _r)
 
         def updateMusicChangeTitle(self, titleCurrent, newTitle, context=None):
             return _M_ApplicationArchitecturesDistribuees.Server._op_updateMusicChangeTitle.invoke(self, ((titleCurrent, newTitle), context))
@@ -119,14 +119,14 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def end_updateMusicChangeTitle(self, _r):
             return _M_ApplicationArchitecturesDistribuees.Server._op_updateMusicChangeTitle.end(self, _r)
 
-        def playMusic(self, filename, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_playMusic.invoke(self, ((filename, ), context))
+        def playMusic(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_playMusic.invoke(self, ((titleMusic, ), context))
 
-        def playMusicAsync(self, filename, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_playMusic.invokeAsync(self, ((filename, ), context))
+        def playMusicAsync(self, titleMusic, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_playMusic.invokeAsync(self, ((titleMusic, ), context))
 
-        def begin_playMusic(self, filename, _response=None, _ex=None, _sent=None, context=None):
-            return _M_ApplicationArchitecturesDistribuees.Server._op_playMusic.begin(self, ((filename, ), _response, _ex, _sent, context))
+        def begin_playMusic(self, titleMusic, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_playMusic.begin(self, ((titleMusic, ), _response, _ex, _sent, context))
 
         def end_playMusic(self, _r):
             return _M_ApplicationArchitecturesDistribuees.Server._op_playMusic.end(self, _r)
@@ -199,13 +199,13 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def deleteMusic(self, titleMusic, current=None):
             raise NotImplementedError("servant method 'deleteMusic' not implemented")
 
-        def searchMusic(self, titleMusic, current=None):
-            raise NotImplementedError("servant method 'searchMusic' not implemented")
+        def searchClosestMusic(self, titleMusic, current=None):
+            raise NotImplementedError("servant method 'searchClosestMusic' not implemented")
 
         def updateMusicChangeTitle(self, titleCurrent, newTitle, current=None):
             raise NotImplementedError("servant method 'updateMusicChangeTitle' not implemented")
 
-        def playMusic(self, filename, current=None):
+        def playMusic(self, titleMusic, current=None):
             raise NotImplementedError("servant method 'playMusic' not implemented")
 
         def stopMusic(self, current=None):
@@ -227,7 +227,7 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
     Server._op_uploadPart = IcePy.Operation('uploadPart', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), _M_ApplicationArchitecturesDistribuees._t_byteList, False, 0)), (), ((), IcePy._t_bool, False, 0), ())
     Server._op_uploadFileAndInsertMusic = IcePy.Operation('uploadFileAndInsertMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_int, False, 0), ((), IcePy._t_string, False, 0)), (), ((), IcePy._t_bool, False, 0), ())
     Server._op_deleteMusic = IcePy.Operation('deleteMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
-    Server._op_searchMusic = IcePy.Operation('searchMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), None, ())
+    Server._op_searchClosestMusic = IcePy.Operation('searchClosestMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), ((), IcePy._t_string, False, 0), ())
     Server._op_updateMusicChangeTitle = IcePy.Operation('updateMusicChangeTitle', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0), ((), IcePy._t_string, False, 0)), (), None, ())
     Server._op_playMusic = IcePy.Operation('playMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), ((), IcePy._t_bool, False, 0), ())
     Server._op_stopMusic = IcePy.Operation('stopMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), IcePy._t_bool, False, 0), ())
