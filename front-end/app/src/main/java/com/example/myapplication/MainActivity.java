@@ -42,6 +42,7 @@ import java.security.Permission;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -94,7 +95,6 @@ public class MainActivity extends AppCompatActivity  {
 
     private Handler handler;
 
-
     String tempRawFile = "temp_record.raw";
     String tempWavFile = "final_record.wav";
     final int bpp = 16;
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity  {
     //String ipv4 = "10.0.2.2";
     String ipv4 = "192.168.1.128";
     String flask = "http://192.168.1.128";
+    HistoriqueDesTitresDeMusiques historiqueDesTitresDeMusiques = new HistoriqueDesTitresDeMusiques();
 
     String splitStr(String str){
         String[] segments = str.split("/");
@@ -192,6 +193,7 @@ public class MainActivity extends AppCompatActivity  {
         buttonPrevious = findViewById(R.id.button_previous);
         buttonNext = findViewById(R.id.button_next);
         buttonSpeech = findViewById(R.id.button_speech);
+        buttonSpeech.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_baseline_upload_file_24));
 
         Drawable icon_play = getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24);
         Drawable icon_pause = getResources().getDrawable(R.drawable.ic_pause_foreground);
@@ -203,6 +205,7 @@ public class MainActivity extends AppCompatActivity  {
         mUserInputHistory = findViewById(R.id.userInputHistory);
         mSendButton = findViewById(R.id.sendButton);
         mTalkButton = findViewById(R.id.button_talk);
+        mTalkButton.setBackground(getResources().getDrawable(R.drawable.ic_baseline_record_voice_over_24));
 
         musicTitle.setSelected(true);
         
@@ -221,7 +224,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                     isPlayed = false;
                 }else{
-                    Boolean play = app.playMusic("影河飞天");
+                    Boolean play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
                     if(play){
                         buttonPlay.setBackgroundDrawable(icon_pause);
                         mediaPlayer.play();
@@ -258,6 +261,7 @@ public class MainActivity extends AppCompatActivity  {
                 filePath = dir.getAbsolutePath();
                 if (!isRecording) {
                     // Commencer l'enregistrement
+                    mTalkButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_baseline_voice_over_off_24));
                     Toast.makeText(MainActivity.this, "Appuyer pour arrêter l'enregistrement", Toast.LENGTH_LONG).show();
                     startRecording();
                     if(!checkWritePermission()){
@@ -265,6 +269,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 } else {
                     // Arrêter l'enregistrement
+                    mTalkButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_baseline_record_voice_over_24));
                     Toast.makeText(MainActivity.this, "L'enregistrement est fini", Toast.LENGTH_LONG).show();
                     stopRecording();
 
@@ -555,7 +560,7 @@ public class MainActivity extends AppCompatActivity  {
 
     public void verifierActions(String actions) throws JSONException, IOException {
         JSONObject jObject = new JSONObject(actions);
-        String aJsonString = jObject.getString("Action");
+        String aJsonString = jObject.getString("Actions");
         String[] arr = null;
         arr = aJsonString.split(",");
         for (int i = 0; i < arr.length; i++) {
@@ -566,18 +571,106 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void traiterActions(String action) throws IOException {
+        Drawable icon_play = getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24);
+        Drawable icon_pause = getResources().getDrawable(R.drawable.ic_pause_foreground);
+        String titre = null;
+        Boolean play = false;
+
+        if(titre != null) {
+            play = app.playMusic(titre);
+        }
+
+        if(action.contains("TITRE")) {
+            titre = action.split(";")[1];
+            action = "JOUER";
+        }
+
         switch (action) {
+            case "LECTURE":
+                addMessageToChat("Bot: La musique reprend", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                if(!isPlayed){
+                    if(play){
+                        buttonPlay.setBackgroundDrawable(icon_pause);
+                        mediaPlayer.play();
+                        isPlayed = true;
+                    } else{
+                        System.out.println("No music! ");
+                    }
+                }
+                break;
             case "JOUER":
-                addMessageToChat("Bot: La musique est lancée", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                addMessageToChat("Bot: Je cherche la musique", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                if(isPlayed){
+                    Boolean pause = app.pauseMusic();
+                    if(pause){
+                        buttonPlay.setBackgroundDrawable(icon_play);
+                        mediaPlayer.pause();
+                    }
+                    isPlayed = false;
+                }
+                play = app.playMusic(titre);
+                if(play){
+                    addMessageToChat("Bot: La musique " + titre + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                    historiqueDesTitresDeMusiques.jouerMusique(titre);
+                    buttonPlay.setBackgroundDrawable(icon_pause);
+                    mediaPlayer.play();
+                    isPlayed = true;
+                } else{
+                    System.out.println("No music! ");
+                }
                 break;
             case "PAUSE":
-                addMessageToChat("Bot: La musique en pause", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                addMessageToChat("Bot: La musique est en pause", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                if(isPlayed){
+                    Boolean pause = app.pauseMusic();
+                    if(pause){
+                        buttonPlay.setBackgroundDrawable(icon_play);
+                        mediaPlayer.pause();
+                        isPlayed = false;
+                    }
+                }
                 break;
             case "SUIVANT":
-                addMessageToChat("Bot: Je lance la musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                /**
+                 * La musique suivante :
+                 * Si historiqueDesMusiques.size() < currentID => Jouer currentID++
+                 * Sinon musique alétoire qui n'est pas dans historiqueDesMusiques
+                 * Si plus de musique différente, on averti l'utilisateur
+                 */
+                if(historiqueDesTitresDeMusiques.chercherTitre(titre) != -1 && play) {
+                    // Musique random
+                    play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.chercherTitre(titre)));
+                } else {
+                    //Random
+                    play = app.playMusic(titre);
+                    historiqueDesTitresDeMusiques.jouerMusique(titre);
+                }
+
+                if(play){
+                    addMessageToChat("Bot: Je lance la musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                    buttonPlay.setBackgroundDrawable(icon_pause);
+                    mediaPlayer.play();
+                    isPlayed = true;
+                } else{
+                    addMessageToChat("Bot: Il n'y a pas de musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                }
                 break;
             case "PRECEDENT":
                 addMessageToChat("Bot: Je remets la musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                /**
+                 * Si pas de musique précédent, on averti l'utilisateur
+                 */
+                if(historiqueDesTitresDeMusiques.getCurrentID() > 0) {
+                    historiqueDesTitresDeMusiques.musiquePrecedent();
+                    play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
+                    if(play){
+                        buttonPlay.setBackgroundDrawable(icon_pause);
+                        mediaPlayer.play();
+                        isPlayed = true;
+                    } else{
+                        addMessageToChat("Bot: Il n'y a pas de musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                    }
+                }
                 break;
             case "AUGMENTER":
                 addMessageToChat("Bot: Le son est augmenté", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
@@ -597,7 +690,7 @@ public class MainActivity extends AppCompatActivity  {
                 audio.adjustVolume(AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_PLAY_SOUND);
                 break;
             default:
-                addMessageToChat("Bot: Je ne comprends pas la requête", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                addMessageToChat("Bot: Je ne comprends pas la requête : " + action, Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
         }
     }
 
