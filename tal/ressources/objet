@@ -3,3 +3,5 @@
 (augment(e|er|es|ent)|monte) @@ AUGMENTER
 (suivant(e|es)|pass(e|er|es|ent)) @@ SUIVANT
 (avant|retour|rev(enir|ient)|précédent(e|es)) @@ PRECEDENT
+(remet(s)|rejou(e|er|es|ent)) @@ LECTURE
+(boneless|this is what you came for) @@ TITRE

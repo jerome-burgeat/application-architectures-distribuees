@@ -13,7 +13,7 @@ class Server(ApplicationArchitecturesDistribuees.Server):
     collection = db["musics"]
     
     def __init__(self):
-        self.ipv4 = "192.168.1.128"
+        self.ipv4 = "192.168.1.11"
         self.index = 0
         self.uploadingFiles = {}
         self.player = vlc.Instance()
@@ -46,7 +46,7 @@ class Server(ApplicationArchitecturesDistribuees.Server):
         print("file infos: " , title, album, artist)
         print("upload file successfuly! ")
         # musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "url": ' + '"musics/' + filename + '"}'
-        musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "filename": "' + filename + '", "url": ' + '"E://Yingqi/etudes/M1S2/application-architectures-distribuees/back-end/musics/' + filename + '"}'
+        musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "filename": "' + filename + '", "url": ' + '"../musics' + filename + '"}'
         dataToInsert = json.loads(musicData)
         result = self.collection.insert_one(dataToInsert)
         # print("result: " + result)
