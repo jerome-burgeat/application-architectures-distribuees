@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity  {
     Thread recordingThread;
 
     //String ipv4 = "10.0.2.2";
-    String ipv4 = "192.168.1.11";
-    String flask = "http://192.168.1.11";
+    String ipv4 = "192.168.1.128";
+    String flask = "http://192.168.1.128";
     HistoriqueDesTitresDeMusiques historiqueDesTitresDeMusiques = new HistoriqueDesTitresDeMusiques();
 
     String splitStr(String str){
@@ -197,6 +197,9 @@ public class MainActivity extends AppCompatActivity  {
 
         Drawable icon_play = getResources().getDrawable(R.drawable.ic_baseline_play_arrow_24);
         Drawable icon_pause = getResources().getDrawable(R.drawable.ic_pause_foreground);
+
+        Drawable icon_wifi = getResources().getDrawable(R.drawable.ic_smile_foreground);
+        Drawable icon_upload = getResources().getDrawable(R.drawable.ic_upload_foreground);
 
         mUserInput = findViewById(R.id.userInput);
         mUserInputHistory = findViewById(R.id.userInputHistory);
@@ -315,6 +318,15 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            buttonSpeech.setBackgroundDrawable(icon_upload);
+        } else {
+            buttonSpeech.setBackgroundDrawable(icon_wifi);
+        }
 
         buttonSpeech.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -344,9 +356,9 @@ public class MainActivity extends AppCompatActivity  {
                             WRITE_EXTERNAL_STORAGE_REQUEST_CODE);
                 }
 
-                    Intent intent = getIntent();
-                    String action = intent.getAction();
-                    String type = intent.getType();
+//                    Intent intent = getIntent();
+//                    String action = intent.getAction();
+//                    String type = intent.getType();
 
                     if (Intent.ACTION_SEND.equals(action) && type != null) {
                         if (type.startsWith("image/")) {
@@ -356,6 +368,7 @@ public class MainActivity extends AppCompatActivity  {
                             // treat audio file
                             try {
                                 handleAudio(intent);
+                                buttonSpeech.setBackgroundDrawable(icon_wifi);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -410,7 +423,6 @@ public class MainActivity extends AppCompatActivity  {
                         System.out.println("File does not exist.");
                     }
                 }
-
             }
         });
 

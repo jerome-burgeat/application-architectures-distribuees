@@ -32,11 +32,11 @@ public interface Server extends com.zeroc.Ice.Object
 
     void deleteMusic(String titleMusic, com.zeroc.Ice.Current current);
 
-    void searchMusic(String titleMusic, com.zeroc.Ice.Current current);
+    String searchClosestMusic(String titleMusic, com.zeroc.Ice.Current current);
 
     void updateMusicChangeTitle(String titleCurrent, String newTitle, com.zeroc.Ice.Current current);
 
-    boolean playMusic(String filename, com.zeroc.Ice.Current current);
+    boolean playMusic(String titleMusic, com.zeroc.Ice.Current current);
 
     boolean stopMusic(com.zeroc.Ice.Current current);
 
@@ -130,15 +130,18 @@ public interface Server extends com.zeroc.Ice.Object
         return inS.setResult(inS.writeEmptyParams());
     }
 
-    static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_searchMusic(Server obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
+    static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_searchClosestMusic(Server obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         com.zeroc.Ice.InputStream istr = inS.startReadParams();
         String iceP_titleMusic;
         iceP_titleMusic = istr.readString();
         inS.endReadParams();
-        obj.searchMusic(iceP_titleMusic, current);
-        return inS.setResult(inS.writeEmptyParams());
+        String ret = obj.searchClosestMusic(iceP_titleMusic, current);
+        com.zeroc.Ice.OutputStream ostr = inS.startWriteParams();
+        ostr.writeString(ret);
+        inS.endWriteParams(ostr);
+        return inS.setResult(ostr);
     }
 
     static java.util.concurrent.CompletionStage<com.zeroc.Ice.OutputStream> _iceD_updateMusicChangeTitle(Server obj, final com.zeroc.IceInternal.Incoming inS, com.zeroc.Ice.Current current)
@@ -158,10 +161,10 @@ public interface Server extends com.zeroc.Ice.Object
     {
         com.zeroc.Ice.Object._iceCheckMode(null, current.mode);
         com.zeroc.Ice.InputStream istr = inS.startReadParams();
-        String iceP_filename;
-        iceP_filename = istr.readString();
+        String iceP_titleMusic;
+        iceP_titleMusic = istr.readString();
         inS.endReadParams();
-        boolean ret = obj.playMusic(iceP_filename, current);
+        boolean ret = obj.playMusic(iceP_titleMusic, current);
         com.zeroc.Ice.OutputStream ostr = inS.startWriteParams();
         ostr.writeBool(ret);
         inS.endWriteParams(ostr);
@@ -201,7 +204,7 @@ public interface Server extends com.zeroc.Ice.Object
         "ice_ping",
         "pauseMusic",
         "playMusic",
-        "searchMusic",
+        "searchClosestMusic",
         "stopMusic",
         "updateMusicChangeTitle",
         "uploadFileAndInsertMusic",
@@ -258,7 +261,7 @@ public interface Server extends com.zeroc.Ice.Object
             }
             case 9:
             {
-                return _iceD_searchMusic(this, in, current);
+                return _iceD_searchClosestMusic(this, in, current);
             }
             case 10:
             {

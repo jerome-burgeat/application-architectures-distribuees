@@ -179,32 +179,36 @@ public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
         return f;
     }
 
-    default void searchMusic(String titleMusic)
+    default String searchClosestMusic(String titleMusic)
     {
-        searchMusic(titleMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext);
+        return searchClosestMusic(titleMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
-    default void searchMusic(String titleMusic, java.util.Map<String, String> context)
+    default String searchClosestMusic(String titleMusic, java.util.Map<String, String> context)
     {
-        _iceI_searchMusicAsync(titleMusic, context, true).waitForResponse();
+        return _iceI_searchClosestMusicAsync(titleMusic, context, true).waitForResponse();
     }
 
-    default java.util.concurrent.CompletableFuture<Void> searchMusicAsync(String titleMusic)
+    default java.util.concurrent.CompletableFuture<java.lang.String> searchClosestMusicAsync(String titleMusic)
     {
-        return _iceI_searchMusicAsync(titleMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+        return _iceI_searchClosestMusicAsync(titleMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
     }
 
-    default java.util.concurrent.CompletableFuture<Void> searchMusicAsync(String titleMusic, java.util.Map<String, String> context)
+    default java.util.concurrent.CompletableFuture<java.lang.String> searchClosestMusicAsync(String titleMusic, java.util.Map<String, String> context)
     {
-        return _iceI_searchMusicAsync(titleMusic, context, false);
+        return _iceI_searchClosestMusicAsync(titleMusic, context, false);
     }
 
-    default com.zeroc.IceInternal.OutgoingAsync<Void> _iceI_searchMusicAsync(String iceP_titleMusic, java.util.Map<String, String> context, boolean sync)
+    default com.zeroc.IceInternal.OutgoingAsync<java.lang.String> _iceI_searchClosestMusicAsync(String iceP_titleMusic, java.util.Map<String, String> context, boolean sync)
     {
-        com.zeroc.IceInternal.OutgoingAsync<Void> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "searchMusic", null, sync, null);
-        f.invoke(false, context, null, ostr -> {
+        com.zeroc.IceInternal.OutgoingAsync<java.lang.String> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "searchClosestMusic", null, sync, null);
+        f.invoke(true, context, null, ostr -> {
                      ostr.writeString(iceP_titleMusic);
-                 }, null);
+                 }, istr -> {
+                     String ret;
+                     ret = istr.readString();
+                     return ret;
+                 });
         return f;
     }
 
@@ -238,31 +242,31 @@ public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
         return f;
     }
 
-    default boolean playMusic(String filename)
+    default boolean playMusic(String titleMusic)
     {
-        return playMusic(filename, com.zeroc.Ice.ObjectPrx.noExplicitContext);
+        return playMusic(titleMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext);
     }
 
-    default boolean playMusic(String filename, java.util.Map<String, String> context)
+    default boolean playMusic(String titleMusic, java.util.Map<String, String> context)
     {
-        return _iceI_playMusicAsync(filename, context, true).waitForResponse();
+        return _iceI_playMusicAsync(titleMusic, context, true).waitForResponse();
     }
 
-    default java.util.concurrent.CompletableFuture<java.lang.Boolean> playMusicAsync(String filename)
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> playMusicAsync(String titleMusic)
     {
-        return _iceI_playMusicAsync(filename, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+        return _iceI_playMusicAsync(titleMusic, com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
     }
 
-    default java.util.concurrent.CompletableFuture<java.lang.Boolean> playMusicAsync(String filename, java.util.Map<String, String> context)
+    default java.util.concurrent.CompletableFuture<java.lang.Boolean> playMusicAsync(String titleMusic, java.util.Map<String, String> context)
     {
-        return _iceI_playMusicAsync(filename, context, false);
+        return _iceI_playMusicAsync(titleMusic, context, false);
     }
 
-    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> _iceI_playMusicAsync(String iceP_filename, java.util.Map<String, String> context, boolean sync)
+    default com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> _iceI_playMusicAsync(String iceP_titleMusic, java.util.Map<String, String> context, boolean sync)
     {
         com.zeroc.IceInternal.OutgoingAsync<java.lang.Boolean> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "playMusic", null, sync, null);
         f.invoke(true, context, null, ostr -> {
-                     ostr.writeString(iceP_filename);
+                     ostr.writeString(iceP_titleMusic);
                  }, istr -> {
                      boolean ret;
                      ret = istr.readBool();

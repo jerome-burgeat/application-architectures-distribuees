@@ -5,6 +5,7 @@ import pymongo
 import json
 import vlc
 from mutagen.mp3 import MP3
+import Levenshtein
  
 class Server(ApplicationArchitecturesDistribuees.Server):
 
@@ -13,7 +14,7 @@ class Server(ApplicationArchitecturesDistribuees.Server):
     collection = db["musics"]
     
     def __init__(self):
-        self.ipv4 = "192.168.1.11"
+        self.ipv4 = "192.168.1.128"
         self.index = 0
         self.uploadingFiles = {}
         self.player = vlc.Instance()
@@ -46,35 +47,46 @@ class Server(ApplicationArchitecturesDistribuees.Server):
         print("file infos: " , title, album, artist)
         print("upload file successfuly! ")
         # musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "url": ' + '"musics/' + filename + '"}'
-        musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "filename": "' + filename + '", "url": ' + '"../musics' + filename + '"}'
+        musicData = '{"title": "' + title + '", "artist": "' + artist + '", "album": "' + album + '", "filename": "' + filename + '", "url": ' + '"E://Yingqi/etudes/M1S2/application-architectures-distribuees/back-end/musics/' + filename + '"}'
         dataToInsert = json.loads(musicData)
         result = self.collection.insert_one(dataToInsert)
         # print("result: " + result)
         return 0
 
+    def getAllMusics(self, current=None):
+        listMusic = []
+        all_data = list(self.collection.find())
+        for data in all_data:
+            listMusic.append(data['title'])
+        return listMusic
+
     def deleteMusic(self, titleMusic:str, current=None):
         result = self.collection.delete_one({"title": titleMusic})
 
-    def searchMusic(self, titleMusic:str, current:None):
-        result = self.collection.find_one({"title": titleMusic})
-        print(result)
+    def searchClosestMusic(self, titleMusic:str, current=None):
+        musicList = self.getAllMusics()
+        min_distance = float("inf")
+        closest_music = ""
+        for string in musicList:
+            distance = Levenshtein.distance(titleMusic, string)
+            if distance < min_distance:
+                min_distance = distance
+                closest_music = string
+        return closest_music
 
     def updateMusicChangeTitle(self, titleCurrent:str, newTitle:str, current=None):
         result = self.collection.update_one({"title": titleCurrent}, {"$set": {"title": newTitle}})
 
-    def playMusic(self, musicTitle, current=None):
+    def playMusic(self, musicStr, current=None):
         print("get request ! ")
-        # if(self.media_player.is_playing()):
-        #     print("music playing....")
-        #     self.media_player.play()
-        #     return True
+        musicTitle = self.searchClosestMusic(musicStr)
         if(self.media_player.get_state() == vlc.State.Paused):
             print("music playing....")
             self.media_player.play()
             return True
         else:
             print("not music playing....")
-            filter = {'title': musicTitle}  # 替换为你的查询条件，如字段名和字段值
+            filter = {'title': musicTitle} 
 
             document = self.collection.find_one(filter)
             filename = document['filename']
