@@ -337,6 +337,37 @@ public interface ServerPrx extends com.zeroc.Ice.ObjectPrx
         return f;
     }
 
+    default String[] getAllMusics()
+    {
+        return getAllMusics(com.zeroc.Ice.ObjectPrx.noExplicitContext);
+    }
+
+    default String[] getAllMusics(java.util.Map<String, String> context)
+    {
+        return _iceI_getAllMusicsAsync(context, true).waitForResponse();
+    }
+
+    default java.util.concurrent.CompletableFuture<String[]> getAllMusicsAsync()
+    {
+        return _iceI_getAllMusicsAsync(com.zeroc.Ice.ObjectPrx.noExplicitContext, false);
+    }
+
+    default java.util.concurrent.CompletableFuture<String[]> getAllMusicsAsync(java.util.Map<String, String> context)
+    {
+        return _iceI_getAllMusicsAsync(context, false);
+    }
+
+    default com.zeroc.IceInternal.OutgoingAsync<String[]> _iceI_getAllMusicsAsync(java.util.Map<String, String> context, boolean sync)
+    {
+        com.zeroc.IceInternal.OutgoingAsync<String[]> f = new com.zeroc.IceInternal.OutgoingAsync<>(this, "getAllMusics", null, sync, null);
+        f.invoke(true, context, null, null, istr -> {
+                     String[] ret;
+                     ret = istr.readStringSeq();
+                     return ret;
+                 });
+        return f;
+    }
+
     /**
      * Contacts the remote server to verify that the object implements this type.
      * Raises a local exception if a communication error occurs.

@@ -29,6 +29,9 @@ __name__ = 'ApplicationArchitecturesDistribuees'
 if '_t_byteList' not in _M_ApplicationArchitecturesDistribuees.__dict__:
     _M_ApplicationArchitecturesDistribuees._t_byteList = IcePy.defineSequence('::ApplicationArchitecturesDistribuees::byteList', (), IcePy._t_byte)
 
+if '_t_musicList' not in _M_ApplicationArchitecturesDistribuees.__dict__:
+    _M_ApplicationArchitecturesDistribuees._t_musicList = IcePy.defineSequence('::ApplicationArchitecturesDistribuees::musicList', (), IcePy._t_string)
+
 _M_ApplicationArchitecturesDistribuees._t_Server = IcePy.defineValue('::ApplicationArchitecturesDistribuees::Server', Ice.Value, -1, (), False, True, None, ())
 
 if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
@@ -155,6 +158,18 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def end_pauseMusic(self, _r):
             return _M_ApplicationArchitecturesDistribuees.Server._op_pauseMusic.end(self, _r)
 
+        def getAllMusics(self, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getAllMusics.invoke(self, ((), context))
+
+        def getAllMusicsAsync(self, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getAllMusics.invokeAsync(self, ((), context))
+
+        def begin_getAllMusics(self, _response=None, _ex=None, _sent=None, context=None):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getAllMusics.begin(self, ((), _response, _ex, _sent, context))
+
+        def end_getAllMusics(self, _r):
+            return _M_ApplicationArchitecturesDistribuees.Server._op_getAllMusics.end(self, _r)
+
         @staticmethod
         def checkedCast(proxy, facetOrContext=None, context=None):
             return _M_ApplicationArchitecturesDistribuees.ServerPrx.ice_checkedCast(proxy, '::ApplicationArchitecturesDistribuees::Server', facetOrContext, context)
@@ -214,6 +229,9 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
         def pauseMusic(self, current=None):
             raise NotImplementedError("servant method 'pauseMusic' not implemented")
 
+        def getAllMusics(self, current=None):
+            raise NotImplementedError("servant method 'getAllMusics' not implemented")
+
         def __str__(self):
             return IcePy.stringify(self, _M_ApplicationArchitecturesDistribuees._t_ServerDisp)
 
@@ -232,6 +250,7 @@ if 'ServerPrx' not in _M_ApplicationArchitecturesDistribuees.__dict__:
     Server._op_playMusic = IcePy.Operation('playMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (((), IcePy._t_string, False, 0),), (), ((), IcePy._t_bool, False, 0), ())
     Server._op_stopMusic = IcePy.Operation('stopMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), IcePy._t_bool, False, 0), ())
     Server._op_pauseMusic = IcePy.Operation('pauseMusic', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), IcePy._t_bool, False, 0), ())
+    Server._op_getAllMusics = IcePy.Operation('getAllMusics', Ice.OperationMode.Normal, Ice.OperationMode.Normal, False, None, (), (), (), ((), _M_ApplicationArchitecturesDistribuees._t_musicList, False, 0), ())
 
     _M_ApplicationArchitecturesDistribuees.Server = Server
     del Server

@@ -2,6 +2,7 @@ module ApplicationArchitecturesDistribuees
 {
 
 	sequence<byte> byteList;
+    sequence<string> musicList;
 
     interface Server
     {
@@ -15,5 +16,6 @@ module ApplicationArchitecturesDistribuees
         bool playMusic(string titleMusic);
         bool stopMusic();
         bool pauseMusic();
+        musicList getAllMusics();
     }
 }
