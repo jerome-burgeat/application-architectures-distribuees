@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                     isPlayed = false;
                 }else{
-                    Boolean play = app.playMusic("Steve Aoki - Boneless");
+                    Boolean play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
                     if(play){
                         buttonPlay.setBackgroundDrawable(icon_pause);
                         mediaPlayer.play();
@@ -588,6 +588,15 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "JOUER":
                 addMessageToChat("Bot: Je cherche la musique", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                if(isPlayed){
+                    Boolean pause = app.pauseMusic();
+                    if(pause){
+                        buttonPlay.setBackgroundDrawable(icon_play);
+                        mediaPlayer.pause();
+                    }
+                    isPlayed = false;
+                }
+                play = app.playMusic(titre);
                 if(play){
                     addMessageToChat("Bot: La musique " + titre + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                     historiqueDesTitresDeMusiques.jouerMusique(titre);

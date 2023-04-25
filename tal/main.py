@@ -46,6 +46,10 @@ def adaptationDuTexte(phrase):
         phrase = phrase.replace(',', '')
     if phrase.__contains__('.'):
         phrase = phrase.replace('.', '')
+    if phrase.__contains__('('):
+        phrase = phrase.replace('(', '')
+    if phrase.__contains__(')'):
+        phrase = phrase.replace(')', '')
     return phrase
 
 
@@ -92,12 +96,17 @@ def tal():
         # print(mot)
         if trouverUnMot(mot, adaptationDuTexte(texte)):
             # print(liste_actions[compteur])
-            listeDesActions.append(liste_actions[compteur])
+            if liste_actions[compteur].__eq__("TITRE"):
+                for chanson in liste_objets[compteur].split("|"):
+                    if trouverUnMot(adaptationDuTexte(chanson), adaptationDuTexte(texte)):
+                        listeDesActions.append(liste_actions[compteur] + ';' + adaptationDuTexte(chanson))
+            else:
+                listeDesActions.append(liste_actions[compteur])
         compteur += 1
 
     #for category in listOfAction:
     #    print(category)
-    return jsonify({'Action': listeDesActions})
+    return jsonify({'Actions': listeDesActions})
 
 
 # Press the green button in the gutter to run the script.
