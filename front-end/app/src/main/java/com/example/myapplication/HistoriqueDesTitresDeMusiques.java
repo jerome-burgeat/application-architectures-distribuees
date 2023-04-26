@@ -57,7 +57,7 @@ public class HistoriqueDesTitresDeMusiques {
 
     public void musiquePrecedent() {
         if(currentID > 0) {
-            this.setCurrentID(currentID-1);
+            currentID--;
         }
     }
 }

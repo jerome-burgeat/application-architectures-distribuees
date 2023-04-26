@@ -106,8 +106,8 @@ public class MainActivity extends AppCompatActivity  {
     Thread recordingThread;
 
     //String ipv4 = "10.0.2.2";
-    String ipv4 = "192.168.1.128";
-    String flask = "http://192.168.1.128";
+    String ipv4 = "192.168.1.11";
+    String flask = "http://192.168.1.11";
     HistoriqueDesTitresDeMusiques historiqueDesTitresDeMusiques = new HistoriqueDesTitresDeMusiques();
 
     String splitStr(String str){
@@ -598,6 +598,8 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 }
                 break;
+            case "JOUE":
+                break;
             case "JOUER":
                 addMessageToChat("Bot: Je cherche la musique", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                 if(isPlayed){
@@ -637,17 +639,26 @@ public class MainActivity extends AppCompatActivity  {
                  * Sinon musique alétoire qui n'est pas dans historiqueDesMusiques
                  * Si plus de musique différente, on averti l'utilisateur
                  */
-                if(historiqueDesTitresDeMusiques.chercherTitre(titre) != -1 && play) {
+                if(historiqueDesTitresDeMusiques.getCurrentID() < historiqueDesTitresDeMusiques.getTitres().size()-1) {
                     // Musique random
-                    play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.chercherTitre(titre)));
+                    historiqueDesTitresDeMusiques.setCurrentID(historiqueDesTitresDeMusiques.getCurrentID()+1);
+                    play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
                 } else {
                     //Random
-                    play = app.playMusic(titre);
-                    historiqueDesTitresDeMusiques.jouerMusique(titre);
+                    String[] allMusics = app.getAllMusics();
+                    for(int i=0; i < allMusics.length; i++) {
+                        if(historiqueDesTitresDeMusiques.chercherTitre(allMusics[i]) != 1) {
+                            play = app.playMusic(allMusics[i]);
+                            titre = allMusics[i];
+                            historiqueDesTitresDeMusiques.jouerMusique(allMusics[i]);
+                            break;
+                        }
+                    }
                 }
 
                 if(play){
                     addMessageToChat("Bot: Je lance la musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                    addMessageToChat("Bot: La musique " + historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()) + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                     buttonPlay.setBackgroundDrawable(icon_pause);
                     mediaPlayer.play();
                     isPlayed = true;
@@ -656,14 +667,12 @@ public class MainActivity extends AppCompatActivity  {
                 }
                 break;
             case "PRECEDENT":
-                addMessageToChat("Bot: Je remets la musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
-                /**
-                 * Si pas de musique précédent, on averti l'utilisateur
-                 */
                 if(historiqueDesTitresDeMusiques.getCurrentID() > 0) {
                     historiqueDesTitresDeMusiques.musiquePrecedent();
                     play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
                     if(play){
+                        addMessageToChat("Bot: Je remets la musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                        addMessageToChat("Bot: La musique " + historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()) + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                         buttonPlay.setBackgroundDrawable(icon_pause);
                         mediaPlayer.play();
                         isPlayed = true;
