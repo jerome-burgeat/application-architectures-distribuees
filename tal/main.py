@@ -96,11 +96,12 @@ def tal():
         # print(mot)
         if trouverUnMot(mot, adaptationDuTexte(texte)):
             # print(liste_actions[compteur])
-            if liste_actions[compteur].__eq__("TITRE"):
+            if liste_actions[compteur].__eq__("TITRE") and "JOUE" in listeDesActions:
                 for chanson in liste_objets[compteur].split("|"):
+                    print(chanson)
                     if trouverUnMot(adaptationDuTexte(chanson), adaptationDuTexte(texte)):
                         listeDesActions.append(liste_actions[compteur] + ';' + adaptationDuTexte(chanson))
-            else:
+            else :
                 listeDesActions.append(liste_actions[compteur])
         compteur += 1
 

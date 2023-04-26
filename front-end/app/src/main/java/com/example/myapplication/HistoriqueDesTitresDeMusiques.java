@@ -34,12 +34,21 @@ public class HistoriqueDesTitresDeMusiques {
     }
 
     public int chercherTitre(String titre) {
-        return titres.indexOf(titre);
+        boolean isTitre = false;
+        int index = -1;
+        for(int i=0; i < titres.size() && !isTitre; i++) {
+            if(titres.get(i).equals(titre)) {
+                isTitre = true;
+                index=i;
+            }
+        }
+        return index;
     }
 
     public int chercherTitreJoue(String titre) {
         int index = chercherTitre(titre);
-        if (index < currentID) {
+        this.displayHistorique();
+        if (index <= currentID) {
             this.currentID = index;
             return index;
         }
@@ -59,5 +68,13 @@ public class HistoriqueDesTitresDeMusiques {
         if(currentID > 0) {
             currentID--;
         }
+    }
+
+    public void displayHistorique() {
+        System.out.print("HISTORIQUE : [");
+        for(int i=0; i < titres.size(); i++) {
+            System.out.print(titres.get(i)+ ";");
+        }
+        System.out.println("]");
     }
 }

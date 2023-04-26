@@ -40,10 +40,7 @@ import java.lang.Exception;
 import java.net.URLEncoder;
 import java.security.Permission;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.videolan.libvlc.LibVLC;
@@ -614,6 +611,8 @@ public class MainActivity extends AppCompatActivity  {
                 if(play){
                     addMessageToChat("Bot: La musique " + titre + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                     historiqueDesTitresDeMusiques.jouerMusique(titre);
+                    System.out.println("JOUER");
+                    historiqueDesTitresDeMusiques.displayHistorique();
                     buttonPlay.setBackgroundDrawable(icon_pause);
                     mediaPlayer.play();
                     isPlayed = true;
@@ -639,23 +638,36 @@ public class MainActivity extends AppCompatActivity  {
                  * Sinon musique alétoire qui n'est pas dans historiqueDesMusiques
                  * Si plus de musique différente, on averti l'utilisateur
                  */
-                if(historiqueDesTitresDeMusiques.getCurrentID() < historiqueDesTitresDeMusiques.getTitres().size()-1) {
-                    // Musique random
+                if(historiqueDesTitresDeMusiques.getCurrentID() == -1) {
+                    addMessageToChat("Bot: Il n'y a pas de musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                }
+                else if(historiqueDesTitresDeMusiques.getCurrentID() < historiqueDesTitresDeMusiques.getTitres().size()-1) {
+                    // Musique suivante
                     historiqueDesTitresDeMusiques.setCurrentID(historiqueDesTitresDeMusiques.getCurrentID()+1);
                     play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
                 } else {
-                    //Random
+                    // Musique qui n'est pas dans l'historique
+                    System.out.println("BD" + Arrays.toString(app.getAllMusics()));
                     String[] allMusics = app.getAllMusics();
                     for(int i=0; i < allMusics.length; i++) {
-                        if(historiqueDesTitresDeMusiques.chercherTitre(allMusics[i]) != 1) {
+                        if(historiqueDesTitresDeMusiques.chercherTitreJoue(allMusics[i]) == -1) {
                             play = app.playMusic(allMusics[i]);
-                            titre = allMusics[i];
+                            System.out.println("SUIVANT");
                             historiqueDesTitresDeMusiques.jouerMusique(allMusics[i]);
+                            historiqueDesTitresDeMusiques.displayHistorique();
                             break;
                         }
                     }
                 }
 
+                if(isPlayed){
+                    Boolean pause = app.pauseMusic();
+                    if(pause){
+                        buttonPlay.setBackgroundDrawable(icon_play);
+                        mediaPlayer.pause();
+                    }
+                    isPlayed = false;
+                }
                 if(play){
                     addMessageToChat("Bot: Je lance la musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                     addMessageToChat("Bot: La musique " + historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()) + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
@@ -701,6 +713,8 @@ public class MainActivity extends AppCompatActivity  {
             default:
                 addMessageToChat("Bot: Je ne comprends pas la requête : " + action, Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
         }
+        System.out.println("FIN");
+        historiqueDesTitresDeMusiques.displayHistorique();
     }
 
     public String adapterReponse(String mot) {

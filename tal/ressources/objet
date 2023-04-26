@@ -1,7 +1,10 @@
-(jou(e|er|es|ent)|allume|ouvre) @@ JOUER
+(jou(e|er|es|ent)|allume|ouvre) @@ JOUE
 (diminu(e|er|es|ent)|baisse|eteindre) @@ DIMINUER
 (augment(e|er|es|ent)|monte) @@ AUGMENTER
 (suivant(e|es)|pass(e|er|es|ent)) @@ SUIVANT
 (avant|retour|rev(enir|ient)|précédent(e|es)) @@ PRECEDENT
 (remet(s)|rejou(e|er|es|ent)) @@ LECTURE
-(boneless|this is what you came for) @@ TITRE
+(boneless) @@ TITRE
+(this is what you came for) @@ TITRE
+(skeleton) @@ TITRE
+(bailar) @@ TITRE
