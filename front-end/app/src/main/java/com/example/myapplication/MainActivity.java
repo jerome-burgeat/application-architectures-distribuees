@@ -103,8 +103,8 @@ public class MainActivity extends AppCompatActivity  {
     Thread recordingThread;
 
     //String ipv4 = "10.0.2.2";
-    String ipv4 = "192.168.1.11";
-    String flask = "http://192.168.1.11";
+    String ipv4 = "192.168.1.128";
+    String flask = "http://192.168.1.128";
     HistoriqueDesTitresDeMusiques historiqueDesTitresDeMusiques = new HistoriqueDesTitresDeMusiques();
 
     String splitStr(String str){
@@ -599,15 +599,16 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "JOUER":
                 addMessageToChat("Bot: Je cherche la musique", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
-                if(isPlayed){
-                    Boolean pause = app.pauseMusic();
-                    if(pause){
-                        buttonPlay.setBackgroundDrawable(icon_play);
-                        mediaPlayer.pause();
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.stop();
+                    if (app.stopMusic()) {
+                        play = app.playMusic(titre);
+                    } else {
+                        addMessageToChat("Bot: Une erreur est produit!", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                     }
-                    isPlayed = false;
+                }else{
+                    play = app.playMusic(titre);
                 }
-                play = app.playMusic(titre);
                 if(play){
                     addMessageToChat("Bot: La musique " + titre + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                     historiqueDesTitresDeMusiques.jouerMusique(titre);
@@ -644,29 +645,38 @@ public class MainActivity extends AppCompatActivity  {
                 else if(historiqueDesTitresDeMusiques.getCurrentID() < historiqueDesTitresDeMusiques.getTitres().size()-1) {
                     // Musique suivante
                     historiqueDesTitresDeMusiques.setCurrentID(historiqueDesTitresDeMusiques.getCurrentID()+1);
-                    play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
+                    if(mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                        if (app.stopMusic()) {
+                            play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
+                        } else {
+                            addMessageToChat("Bot: Une erreur est produit!", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                        }
+                    }else{
+                        play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
+                    }
                 } else {
                     // Musique qui n'est pas dans l'historique
                     System.out.println("BD" + Arrays.toString(app.getAllMusics()));
                     String[] allMusics = app.getAllMusics();
                     for(int i=0; i < allMusics.length; i++) {
                         if(historiqueDesTitresDeMusiques.chercherTitreJoue(allMusics[i]) == -1) {
-                            play = app.playMusic(allMusics[i]);
+                            if(mediaPlayer.isPlaying()){
+                                mediaPlayer.stop();
+                                if (app.stopMusic()) {
+                                    play = app.playMusic(allMusics[i]);
+                                } else {
+                                    addMessageToChat("Bot: Une erreur est produit!", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                                }
+                            }else{
+                                play = app.playMusic(allMusics[i]);
+                            }
                             System.out.println("SUIVANT");
                             historiqueDesTitresDeMusiques.jouerMusique(allMusics[i]);
                             historiqueDesTitresDeMusiques.displayHistorique();
                             break;
                         }
                     }
-                }
-
-                if(isPlayed){
-                    Boolean pause = app.pauseMusic();
-                    if(pause){
-                        buttonPlay.setBackgroundDrawable(icon_play);
-                        mediaPlayer.pause();
-                    }
-                    isPlayed = false;
                 }
                 if(play){
                     addMessageToChat("Bot: Je lance la musique suivante", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
@@ -681,7 +691,16 @@ public class MainActivity extends AppCompatActivity  {
             case "PRECEDENT":
                 if(historiqueDesTitresDeMusiques.getCurrentID() > 0) {
                     historiqueDesTitresDeMusiques.musiquePrecedent();
-                    play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
+                    if(mediaPlayer.isPlaying()){
+                        mediaPlayer.stop();
+                        if (app.stopMusic()) {
+                            play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
+                        } else {
+                            addMessageToChat("Bot: Une erreur est produit!", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                        }
+                    }else{
+                        play = app.playMusic(historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()));
+                    }
                     if(play){
                         addMessageToChat("Bot: Je remets la musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                         addMessageToChat("Bot: La musique " + historiqueDesTitresDeMusiques.getTitres().get(historiqueDesTitresDeMusiques.getCurrentID()) + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
