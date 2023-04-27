@@ -34,21 +34,13 @@ public class HistoriqueDesTitresDeMusiques {
     }
 
     public int chercherTitre(String titre) {
-        boolean isTitre = false;
-        int index = -1;
-        for(int i=0; i < titres.size() && !isTitre; i++) {
-            if(titres.get(i).equals(titre)) {
-                isTitre = true;
-                index=i;
-            }
-        }
-        return index;
+        return titres.indexOf(titre);
     }
 
     public int chercherTitreJoue(String titre) {
         int index = chercherTitre(titre);
         this.displayHistorique();
-        if (index <= currentID) {
+        if (index != -1) {
             this.currentID = index;
             return index;
         }

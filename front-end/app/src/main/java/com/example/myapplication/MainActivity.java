@@ -103,8 +103,8 @@ public class MainActivity extends AppCompatActivity  {
     Thread recordingThread;
 
     //String ipv4 = "10.0.2.2";
-    String ipv4 = "192.168.1.128";
-    String flask = "http://192.168.1.128";
+    String ipv4 = "192.168.1.11";
+    String flask = "http://"+ipv4;
     HistoriqueDesTitresDeMusiques historiqueDesTitresDeMusiques = new HistoriqueDesTitresDeMusiques();
 
     String splitStr(String str){
@@ -611,7 +611,7 @@ public class MainActivity extends AppCompatActivity  {
                 }
                 if(play){
                     addMessageToChat("Bot: La musique " + titre + " va se lancer", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
-                    historiqueDesTitresDeMusiques.jouerMusique(titre);
+                    historiqueDesTitresDeMusiques.jouerMusique(titre.toLowerCase());
                     System.out.println("JOUER");
                     historiqueDesTitresDeMusiques.displayHistorique();
                     buttonPlay.setBackgroundDrawable(icon_pause);
@@ -672,7 +672,7 @@ public class MainActivity extends AppCompatActivity  {
                                 play = app.playMusic(allMusics[i]);
                             }
                             System.out.println("SUIVANT");
-                            historiqueDesTitresDeMusiques.jouerMusique(allMusics[i]);
+                            historiqueDesTitresDeMusiques.jouerMusique(allMusics[i].toLowerCase());
                             historiqueDesTitresDeMusiques.displayHistorique();
                             break;
                         }
@@ -708,8 +708,11 @@ public class MainActivity extends AppCompatActivity  {
                         mediaPlayer.play();
                         isPlayed = true;
                     } else{
-                        addMessageToChat("Bot: Il n'y a pas de musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
+                        addMessageToChat("Bot: Pas de musique trouver", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                     }
+                }
+                else{
+                    addMessageToChat("Bot: Il n'y a pas de musique précédente", Color.CYAN, View.TEXT_ALIGNMENT_TEXT_START);
                 }
                 break;
             case "AUGMENTER":
