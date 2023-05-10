@@ -1,4 +1,5 @@
 # Application architectures distribuées
+par LUO Yingqi et BURGEAT Jérôme
 
 L'application est composé de 4 dossiers :
 * asr
